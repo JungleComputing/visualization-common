@@ -20,7 +20,7 @@ public abstract class CommonPanel extends JPanel {
     protected GLCanvas          glCanvas;
     protected GLContext         offScreenContext;
 
-    public CommonPanel(CommonWindow glWindow) {
+    public CommonPanel(CommonWindow glWindow, InputHandler inputHandler) {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         setLayout(new BorderLayout(0, 0));
 
@@ -44,7 +44,6 @@ public abstract class CommonPanel extends JPanel {
         glCanvas = new GLCanvas(glCapabilities, offScreenContext);
 
         // Add Mouse event listener
-        InputHandler inputHandler = InputHandler.getInstance();
         glCanvas.addMouseListener(inputHandler);
         glCanvas.addMouseMotionListener(inputHandler);
         glCanvas.addMouseWheelListener(inputHandler);

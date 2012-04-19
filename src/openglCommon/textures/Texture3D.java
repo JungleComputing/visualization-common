@@ -1,7 +1,5 @@
 package openglCommon.textures;
 
-
-
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -9,13 +7,12 @@ import javax.media.opengl.GL3;
 
 import openglCommon.exceptions.UninitializedException;
 
-
 import com.jogamp.common.nio.Buffers;
 
 public class Texture3D extends Texture {
-    protected IntBuffer pointer;
+    protected IntBuffer  pointer;
     protected ByteBuffer image;
-    public int size;
+    public int           size;
 
     public Texture3D(int size, int gLMultiTexUnit) {
         super(gLMultiTexUnit);
@@ -53,9 +50,9 @@ public class Texture3D extends Texture {
         gl.glBindTexture(GL3.GL_TEXTURE_3D, pointer.get(0));
 
         // Wrap.
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_BORDER);
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_BORDER);
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_BORDER);
+        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_MIRRORED_REPEAT);
+        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_MIRRORED_REPEAT);
+        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_MIRRORED_REPEAT);
         gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
         gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
 

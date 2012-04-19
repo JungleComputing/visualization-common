@@ -19,14 +19,27 @@ public abstract class Shader {
     int      shader = -1; // This value is set by creating either a vertex or
                           // fragment shader.
 
-    public Shader(String filename) throws FileNotFoundException {
-        this.filename = filename;
+    public Shader(File file) throws FileNotFoundException {
+        this.filename = file.getName();
 
         // Read file
         StringBuffer buf = new StringBuffer();
-        File file = new File(filename);
         Scanner scan;
         scan = new Scanner(file);
+
+        while (scan.hasNext()) {
+            buf.append(scan.nextLine());
+            buf.append("\n");
+        }
+
+        source = new String[] { buf.toString() };
+    }
+
+    public Shader(String shaderCode) {
+        this.filename = "";
+
+        StringBuffer buf = new StringBuffer();
+        Scanner scan = new Scanner(shaderCode);
 
         while (scan.hasNext()) {
             buf.append(scan.nextLine());

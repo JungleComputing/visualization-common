@@ -41,12 +41,6 @@ public class Picture {
 
             System.out.println("Writing screenshot: " + newFile.getAbsolutePath());
 
-            // if (fromFBO) {
-            // BufferedImage image =
-            // transformPixelsRGBBuffer2ARGB_ByHand(frameBufferPixels);
-            // ImageIO.write(image, "PNG", newFile);
-            // } else {
-
             Screenshot.writeToFile(newFile, width, height);
             // }
         } catch (GLException e) {

@@ -39,7 +39,7 @@ public class InputHandler implements MouseListener, MouseMotionListener, MouseWh
         return SingletonHolder.instance;
     }
 
-    private InputHandler() {
+    protected InputHandler() {
         rotation = new VecF3();
     }
 

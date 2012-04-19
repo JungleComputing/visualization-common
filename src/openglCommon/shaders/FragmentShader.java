@@ -1,16 +1,19 @@
 package openglCommon.shaders;
 
-
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.media.opengl.GL3;
 
 import openglCommon.exceptions.CompilationFailedException;
 
-
 public class FragmentShader extends Shader {
-    public FragmentShader(String filename) throws FileNotFoundException {
-        super(filename);
+    public FragmentShader(File file) throws FileNotFoundException {
+        super(file);
+    }
+
+    public FragmentShader(String shaderCode) throws FileNotFoundException {
+        super(shaderCode);
     }
 
     @Override
