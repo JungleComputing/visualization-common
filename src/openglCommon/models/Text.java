@@ -54,7 +54,7 @@ public class Text extends Model {
         this.tCoords = VectorFMath.toBuffer(texCoords);
     }
 
-    public void setString(GL3 gl, Program program, TypecastFont font, String str, int fontSize) {
+    public void setString(GL3 gl, Program program, TypecastFont font, String str, boolean[] mask, int fontSize) {
         if (str.compareTo(cachedString) != 0) {
             // Get the outline shapes for the current string in this font
             ArrayList<OutlineShape> shapes = font.getOutlineShapes(str, fontSize, SVertex.factory());
@@ -64,15 +64,17 @@ public class Text extends Model {
             ArrayList<GlyphShape> glyphs = new ArrayList<GlyphShape>();
 
             for (int index = 0; index < numGlyps; index++) {
-                if (shapes.get(index) == null) {
-                    continue;
-                }
-                GlyphShape glyphShape = new GlyphShape(SVertex.factory(), shapes.get(index));
+                if (mask[index]) {
+                    if (shapes.get(index) == null) {
+                        continue;
+                    }
+                    GlyphShape glyphShape = new GlyphShape(SVertex.factory(), shapes.get(index));
 
-                if (glyphShape.getNumVertices() < 3) {
-                    continue;
+                    if (glyphShape.getNumVertices() < 3) {
+                        continue;
+                    }
+                    glyphs.add(glyphShape);
                 }
-                glyphs.add(glyphShape);
             }
 
             // Create list of vertices based on the glyph shapes
