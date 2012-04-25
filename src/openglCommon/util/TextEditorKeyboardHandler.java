@@ -1,7 +1,6 @@
 package openglCommon.util;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GLException;
 
-public class TextEditorKeyboardHandler implements KeyListener {
+public class TextEditorKeyboardHandler extends InputHandler {
     private ArrayList<String>            textLines                    = new ArrayList<String>();
     private ArrayList<String>            clipBoard                    = new ArrayList<String>();
     private ArrayList<ArrayList<String>> undoSave                     = new ArrayList<ArrayList<String>>();
@@ -558,5 +557,9 @@ public class TextEditorKeyboardHandler implements KeyListener {
         String finish = textLines.get(lineIndex).substring(cursorIndex);
 
         textLines.set(lineIndex, start + newChar + finish);
+    }
+
+    public ArrayList<String> getTextlines() {
+        return textLines;
     }
 }
