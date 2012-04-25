@@ -41,8 +41,7 @@ public class VectorFMath {
      * @return The dot product of the two vectors.
      */
     public static float dot(VecF4 u, VecF4 v) {
-        return u.v[0] * v.v[0] + u.v[1] * v.v[1] + u.v[2] * v.v[2] + u.v[3]
-                * v.v[3];
+        return u.v[0] * v.v[0] + u.v[1] * v.v[1] + u.v[2] * v.v[2] + u.v[3] * v.v[3];
     }
 
     /**
@@ -121,8 +120,8 @@ public class VectorFMath {
      * @return The new vector, which is the cross product of the two vectors.
      */
     public static VecF3 cross(VecF3 u, VecF3 v) {
-        return new VecF3(u.v[1] * v.v[2] - u.v[2] * v.v[1], u.v[2] * v.v[0]
-                - u.v[0] * v.v[2], u.v[0] * v.v[1] - u.v[1] * v.v[0]);
+        return new VecF3(u.v[1] * v.v[2] - u.v[2] * v.v[1], u.v[2] * v.v[0] - u.v[0] * v.v[2], u.v[0] * v.v[1] - u.v[1]
+                * v.v[0]);
     }
 
     /**
@@ -135,8 +134,8 @@ public class VectorFMath {
      * @return The new vector, which is the cross product of the two vectors.
      */
     public static VecF4 cross(VecF4 u, VecF4 v) {
-        return new VecF4(u.v[1] * v.v[2] - u.v[2] * v.v[1], u.v[2] * v.v[0]
-                - u.v[0] * v.v[2], u.v[0] * v.v[1] - u.v[1] * v.v[0], 0.0f);
+        return new VecF4(u.v[1] * v.v[2] - u.v[2] * v.v[1], u.v[2] * v.v[0] - u.v[0] * v.v[2], u.v[0] * v.v[1] - u.v[1]
+                * v.v[0], 0.0f);
     }
 
     /**
@@ -244,7 +243,7 @@ public class VectorFMath {
     public static FloatBuffer vec2ListToBuffer(List<VecF2> list) {
         FloatBuffer result = FloatBuffer.allocate(list.size() * 2);
 
-        for (VectorF v : list) {
+        for (VecF2 v : list) {
             result.put(v.asBuffer());
         }
 
@@ -263,7 +262,7 @@ public class VectorFMath {
     public static FloatBuffer vec3ListToBuffer(List<VecF3> list) {
         FloatBuffer result = FloatBuffer.allocate(list.size() * 3);
 
-        for (VectorF v : list) {
+        for (VecF3 v : list) {
             result.put(v.asBuffer());
         }
 
@@ -282,7 +281,7 @@ public class VectorFMath {
     public static FloatBuffer vec4ListToBuffer(List<VecF4> list) {
         FloatBuffer result = FloatBuffer.allocate(list.size() * 4);
 
-        for (VectorF v : list) {
+        for (VecF4 v : list) {
             result.put(v.asBuffer());
         }
 
