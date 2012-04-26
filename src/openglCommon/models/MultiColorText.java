@@ -3,6 +3,9 @@ package openglCommon.models;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.media.opengl.GL3;
 
@@ -29,17 +32,19 @@ import com.jogamp.graph.geom.Vertex;
 import com.jogamp.graph.geom.opengl.SVertex;
 
 public class MultiColorText extends Model {
-    private boolean                 initialized = false;
+    private boolean                      initialized = false;
 
-    private HashMap<Integer, VecF4> colors;
-    FloatBuffer                     vertexColors;
+    private HashMap<Integer, GlyphShape> glyphs;
+    private HashMap<Integer, VecF4>      colors;
 
-    private final BoundingBox       bbox;
-    private FloatBuffer             tCoords;
+    FloatBuffer                          vertexColors;
 
-    private FBO                     fbo;
-    private RBOQuad                 quad;
-    private String                  cachedString;
+    private final BoundingBox            bbox;
+    private FloatBuffer                  tCoords;
+
+    private FBO                          fbo;
+    private RBOQuad                      quad;
+    private String                       cachedString;
 
     public MultiColorText(Material material) {
         super(material, vertex_format.TRIANGLES);
@@ -74,6 +79,7 @@ public class MultiColorText extends Model {
     public void setString(GL3 gl, Program program, TypecastFont font, String str, Color4 basicColor, int fontSize) {
         if (cachedString.compareTo(str) != 0) {
             colors = new HashMap<Integer, VecF4>();
+            glyphs = new HashMap<Integer, GlyphShape>();
 
             if (str.compareTo(cachedString) != 0) {
                 // Get the outline shapes for the current string in this font
@@ -81,100 +87,142 @@ public class MultiColorText extends Model {
 
                 // Make a set of glyph shapes from the outlines
                 int numGlyps = shapes.size();
-                ArrayList<GlyphShape> glyphs = new ArrayList<GlyphShape>();
 
                 for (int index = 0; index < numGlyps; index++) {
                     if (shapes.get(index) == null) {
+                        colors.put(index, null);
+                        glyphs.put(index, null);
                         continue;
                     }
                     GlyphShape glyphShape = new GlyphShape(SVertex.factory(), shapes.get(index));
 
                     if (glyphShape.getNumVertices() < 3) {
+                        colors.put(index, null);
+                        glyphs.put(index, null);
                         continue;
                     }
-                    glyphs.add(glyphShape);
+                    colors.put(index, basicColor);
+                    glyphs.put(index, glyphShape);
                 }
 
-                // Create list of vertices based on the glyph shapes
-                ArrayList<Vertex> vertices = new ArrayList<Vertex>();
-                ArrayList<VecF4> vertexColors = new ArrayList<VecF4>();
-                for (int i = 0; i < glyphs.size(); i++) {
-                    GlyphShape glyph = glyphs.get(i);
-                    VecF4 glypColor = basicColor;
-                    colors.put(i, new VecF4(1, 1, 1, 1));
-                    // System.out.println("color: " + glypColor);
-
-                    ArrayList<Triangle> gtris = glyph.triangulate();
-                    for (Triangle t : gtris) {
-                        vertices.add(t.getVertices()[0]);
-                        vertices.add(t.getVertices()[1]);
-                        vertices.add(t.getVertices()[2]);
-
-                        vertexColors.add(glypColor);
-                        vertexColors.add(glypColor);
-                        vertexColors.add(glypColor);
-                    }
-                }
-
-                // Transform the vertices from Vertex objects to Vec4 objects
-                // and
-                // update BoundingBox.
-                VecF4[] myVertices = new VecF4[vertices.size()];
-                VecF2[] myTexCoords = new VecF2[vertices.size()];
-                int i = 0;
-                for (Vertex v : vertices) {
-                    VecF3 vec = new VecF3(v.getX(), v.getY(), v.getZ());
-                    bbox.resize(vec);
-
-                    myVertices[i] = new VecF4(vec, 1f);
-                    myTexCoords[i] = new VecF2(v.getTexCoord()[0], v.getTexCoord()[1]);
-
-                    i++;
-                }
-
-                vbo.delete(gl);
-                this.vertices = VectorFMath.toBuffer(myVertices);
-                this.vertexColors = VectorFMath.vec4ListToBuffer(vertexColors);
-                this.tCoords = VectorFMath.toBuffer(myTexCoords);
-                GLSLAttrib vAttrib = new GLSLAttrib(this.vertices, "MCvertex", GLSLAttrib.SIZE_FLOAT, 4);
-                GLSLAttrib cAttrib = new GLSLAttrib(this.vertexColors, "MCvertexColor", GLSLAttrib.SIZE_FLOAT, 4);
-                GLSLAttrib tAttrib = new GLSLAttrib(this.tCoords, "MCtexCoord", GLSLAttrib.SIZE_FLOAT, 2);
-                vbo = new VBO(gl, vAttrib, cAttrib, tAttrib);
-
-                this.numVertices = vertices.size();
+                makeVBO(gl);
                 this.cachedString = str;
-
-                // Prepare the FBO for 2 pass rendering
-                int textureWidth = 1024;
-                int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox.getWidth()) + 0.5f);
-                fbo = new FBO(textureWidth, textureHeight, GL3.GL_TEXTURE6);
-                fbo.init(gl);
-
-                // Prepare the quad, to be rendered with texture in case of 2
-                // pass
-                // rendering
-                if (quad != null) {
-                    quad.delete(gl);
-                }
-
-                quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(), bbox.getCenter());
-                quad.init(gl);
-
-                initialized = true;
             }
         }
     }
 
-    public void setSubstringColor(String subString, Color4 newColor) {
-        if (cachedString.contains(subString)) {
-            int startIndex = cachedString.indexOf(subString);
-            while (startIndex != -1) {
+    private void makeVBO(GL3 gl) {
+        // Create list of vertices based on the glyph shapes
+        ArrayList<Vertex> vertices = new ArrayList<Vertex>();
+        ArrayList<VecF4> vertexColors = new ArrayList<VecF4>();
+        for (int i = 0; i < glyphs.size(); i++) {
+            if (glyphs.get(i) != null) {
+                GlyphShape glyph = glyphs.get(i);
+                VecF4 glypColor = colors.get(i);
+
+                ArrayList<Triangle> gtris = glyph.triangulate();
+                for (Triangle t : gtris) {
+                    vertices.add(t.getVertices()[0]);
+                    vertices.add(t.getVertices()[1]);
+                    vertices.add(t.getVertices()[2]);
+
+                    vertexColors.add(glypColor);
+                    vertexColors.add(glypColor);
+                    vertexColors.add(glypColor);
+                }
+            }
+        }
+
+        // Transform the vertices from Vertex objects to Vec4 objects
+        // and
+        // update BoundingBox.
+        VecF4[] myVertices = new VecF4[vertices.size()];
+        VecF2[] myTexCoords = new VecF2[vertices.size()];
+        int i = 0;
+        for (Vertex v : vertices) {
+            VecF3 vec = new VecF3(v.getX(), v.getY(), v.getZ());
+            bbox.resize(vec);
+
+            myVertices[i] = new VecF4(vec, 1f);
+            myTexCoords[i] = new VecF2(v.getTexCoord()[0], v.getTexCoord()[1]);
+
+            i++;
+        }
+
+        vbo.delete(gl);
+        this.vertices = VectorFMath.toBuffer(myVertices);
+        this.vertexColors = VectorFMath.vec4ListToBuffer(vertexColors);
+        this.tCoords = VectorFMath.toBuffer(myTexCoords);
+        GLSLAttrib vAttrib = new GLSLAttrib(this.vertices, "MCvertex", GLSLAttrib.SIZE_FLOAT, 4);
+        GLSLAttrib cAttrib = new GLSLAttrib(this.vertexColors, "MCvertexColor", GLSLAttrib.SIZE_FLOAT, 4);
+        GLSLAttrib tAttrib = new GLSLAttrib(this.tCoords, "MCtexCoord", GLSLAttrib.SIZE_FLOAT, 2);
+        vbo = new VBO(gl, vAttrib, cAttrib, tAttrib);
+
+        this.numVertices = vertices.size();
+
+        // Prepare the FBO for 2 pass rendering
+        int textureWidth = 1024;
+        int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox.getWidth()) + 0.5f);
+        fbo = new FBO(textureWidth, textureHeight, GL3.GL_TEXTURE6);
+        fbo.init(gl);
+
+        // Prepare the quad, to be rendered with texture in case of 2
+        // pass
+        // rendering
+        if (quad != null) {
+            quad.delete(gl);
+        }
+
+        quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(), bbox.getCenter());
+        quad.init(gl);
+
+        initialized = true;
+    }
+
+    public void setSubstringColors(GL3 gl, HashMap<String, Color4> map) {
+        for (Map.Entry<String, Color4> entry : map.entrySet()) {
+            setSubstringColorWordBounded(gl, entry.getKey(), entry.getValue());
+        }
+    }
+
+    public void setSubstringColorWordBounded(GL3 gl, String subString, Color4 newColor) {
+        if (cachedString.contains(subString) && subString.compareTo("") != 0) {
+            Pattern p = Pattern.compile("\\b" + subString + "\\b");
+            Matcher m = p.matcher(cachedString);
+
+            int startIndex = 0;
+            while (m.find(startIndex)) {
+                startIndex = m.start();
                 for (int i = 0; i < subString.length(); i++) {
                     colors.put(startIndex + i, newColor);
                 }
-                startIndex = cachedString.indexOf(subString, startIndex);
+                startIndex++; // read past to avoid never-ending loop
             }
         }
+    }
+
+    public void setSubstringColor(GL3 gl, String subString, Color4 newColor) {
+        if (cachedString.contains(subString) && subString.compareTo("") != 0) {
+            int startIndex = cachedString.indexOf(subString);
+            while (startIndex > -1) {
+                for (int i = 0; i < subString.length(); i++) {
+                    colors.put(startIndex + i, newColor);
+                }
+                startIndex = cachedString.indexOf(subString, startIndex + 1);
+            }
+        }
+    }
+
+    public void setSubstringAtIndexColor(GL3 gl, int startIndex, String subString, Color4 newColor) {
+        if (cachedString.contains(subString) && subString.compareTo("") != 0) {
+            for (int i = 0; i < subString.length(); i++) {
+                colors.put(startIndex + i, newColor);
+            }
+        }
+    }
+
+    public void finalizeColorScheme(GL3 gl) {
+        makeVBO(gl);
     }
 
     private void render2FBO(GL3 gl, Program program) throws UninitializedException {

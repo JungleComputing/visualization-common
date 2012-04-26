@@ -460,6 +460,63 @@ public class TextEditorKeyboardHandler extends InputHandler {
         return false;
     }
 
+    public String getSelectedText() {
+        // swap order in weird selection cases
+        int temp;
+        int startLineIndex = selectionLineStartPosition;
+        int stopLineIndex = selectionLineStopPosition;
+        int startCursorIndex = selectionCursorStartPosition;
+        int stopCursorIndex = selectionCursorStopPosition;
+
+        if (stopLineIndex < startLineIndex) {
+            temp = stopLineIndex;
+            stopLineIndex = startLineIndex;
+            startLineIndex = temp;
+
+            temp = stopCursorIndex;
+            stopCursorIndex = startCursorIndex + 1;
+            startCursorIndex = temp;
+        } else if (stopLineIndex == startLineIndex) {
+            if (stopCursorIndex < startCursorIndex) {
+                temp = stopCursorIndex;
+                stopCursorIndex = startCursorIndex + 1;
+                startCursorIndex = temp;
+            }
+        }
+
+        int startStrIndex = posInScreenString(startLineIndex, startCursorIndex);
+        int stopStrIndex = posInScreenString(stopLineIndex, stopCursorIndex);
+
+        return getText().substring(startStrIndex, stopStrIndex);
+    }
+
+    public int getSelectedTextIndex() {
+        // swap order in weird selection cases
+        int temp;
+        int startLineIndex = selectionLineStartPosition;
+        int stopLineIndex = selectionLineStopPosition;
+        int startCursorIndex = selectionCursorStartPosition;
+        int stopCursorIndex = selectionCursorStopPosition;
+
+        if (stopLineIndex < startLineIndex) {
+            temp = stopLineIndex;
+            stopLineIndex = startLineIndex;
+            startLineIndex = temp;
+
+            temp = stopCursorIndex;
+            stopCursorIndex = startCursorIndex + 1;
+            startCursorIndex = temp;
+        } else if (stopLineIndex == startLineIndex) {
+            if (stopCursorIndex < startCursorIndex) {
+                temp = stopCursorIndex;
+                stopCursorIndex = startCursorIndex + 1;
+                startCursorIndex = temp;
+            }
+        }
+
+        return posInScreenString(startLineIndex, startCursorIndex);
+    }
+
     public boolean[] getSelectedMask() {
         // swap order in weird selection cases
         int temp;

@@ -112,8 +112,6 @@ public class Program {
             }
         }
 
-        warningsGiven = true;
-
         return compatible;
     }
 
@@ -146,8 +144,6 @@ public class Program {
             }
         }
 
-        warningsGiven = true;
-
         return allPresent;
     }
 
@@ -170,8 +166,6 @@ public class Program {
                 }
             }
         }
-
-        warningsGiven = true;
 
         return allPresent;
     }
@@ -227,6 +221,8 @@ public class Program {
         }
 
         checkIns(vs.getIns(), attribs);
+
+        warningsGiven = true;
     }
 
     private void printError(GL3 gl) {

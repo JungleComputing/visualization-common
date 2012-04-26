@@ -93,6 +93,10 @@ public abstract class Shader {
                     clazz = FloatBuffer.class;
                 } else if (words[1].compareTo("float") == 0) {
                     clazz = Float.class;
+                } else if (words[1].compareTo("sampler2D") == 0) {
+                    clazz = Integer.class;
+                } else if (words[1].compareTo("sampler3D") == 0) {
+                    clazz = Integer.class;
                 } else if (words[1].compareTo("int") == 0) {
                     clazz = Integer.class;
                 } else if (words[1].compareTo("mat3") == 0) {
@@ -119,6 +123,10 @@ public abstract class Shader {
                     clazz = Float.class;
                 } else if (words[1].compareTo("int") == 0) {
                     clazz = Integer.class;
+                } else if (words[1].compareTo("sampler2D") == 0) {
+                    clazz = Integer.class;
+                } else if (words[1].compareTo("sampler3D") == 0) {
+                    clazz = Integer.class;
                 } else if (words[1].compareTo("mat3") == 0) {
                     clazz = FloatBuffer.class;
                 } else if (words[1].compareTo("mat4") == 0) {
@@ -142,6 +150,10 @@ public abstract class Shader {
                 } else if (words[1].compareTo("float") == 0) {
                     clazz = Float.class;
                 } else if (words[1].compareTo("int") == 0) {
+                    clazz = Integer.class;
+                } else if (words[1].compareTo("sampler2D") == 0) {
+                    clazz = Integer.class;
+                } else if (words[1].compareTo("sampler3D") == 0) {
                     clazz = Integer.class;
                 } else if (words[1].compareTo("mat3") == 0) {
                     clazz = FloatBuffer.class;
