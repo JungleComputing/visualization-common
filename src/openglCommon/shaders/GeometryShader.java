@@ -1,17 +1,14 @@
 package openglCommon.shaders;
 
-
-
 import java.io.FileNotFoundException;
 
 import javax.media.opengl.GL3;
 
 import openglCommon.exceptions.CompilationFailedException;
 
-
 public class GeometryShader extends Shader {
-    public GeometryShader(String filename) throws FileNotFoundException {
-        super(filename);
+    public GeometryShader(String shaderName, String filename) throws FileNotFoundException {
+        super(shaderName, filename);
     }
 
     @Override

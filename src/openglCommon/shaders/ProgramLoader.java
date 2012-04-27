@@ -24,11 +24,11 @@ public class ProgramLoader {
         programs = new HashMap<Integer, Program>();
     }
 
-    public Program createProgram(GL3 gl, File vsSourceFile, File fsSourceFile) throws FileNotFoundException,
-            CompilationFailedException {
-        VertexShader vs = new VertexShader(vsSourceFile);
+    public Program createProgram(GL3 gl, String programName, File vsSourceFile, File fsSourceFile)
+            throws FileNotFoundException, CompilationFailedException {
+        VertexShader vs = new VertexShader(programName + " : Vertex Shader", vsSourceFile);
         vs.init(gl);
-        FragmentShader fs = new FragmentShader(fsSourceFile);
+        FragmentShader fs = new FragmentShader(programName + " : Fragment Shader", fsSourceFile);
         fs.init(gl);
 
         Program program = new Program(vs, fs);
@@ -38,11 +38,11 @@ public class ProgramLoader {
         return program;
     }
 
-    public Program createProgram(GL3 gl, String vsSourceCode, File fsSourceFile) throws FileNotFoundException,
-            CompilationFailedException {
-        VertexShader vs = new VertexShader(vsSourceCode);
+    public Program createProgram(GL3 gl, String programName, String vsSourceCode, File fsSourceFile)
+            throws FileNotFoundException, CompilationFailedException {
+        VertexShader vs = new VertexShader(programName + " : Vertex Shader", vsSourceCode);
         vs.init(gl);
-        FragmentShader fs = new FragmentShader(fsSourceFile);
+        FragmentShader fs = new FragmentShader(programName + " : Fragment Shader", fsSourceFile);
         fs.init(gl);
 
         Program program = new Program(vs, fs);
@@ -52,11 +52,11 @@ public class ProgramLoader {
         return program;
     }
 
-    public Program createProgram(GL3 gl, File vsSourceFile, String fsSourceCode) throws FileNotFoundException,
-            CompilationFailedException {
-        VertexShader vs = new VertexShader(vsSourceFile);
+    public Program createProgram(GL3 gl, String programName, File vsSourceFile, String fsSourceCode)
+            throws FileNotFoundException, CompilationFailedException {
+        VertexShader vs = new VertexShader(programName + " : Vertex Shader", vsSourceFile);
         vs.init(gl);
-        FragmentShader fs = new FragmentShader(fsSourceCode);
+        FragmentShader fs = new FragmentShader(programName + " : Fragment Shader", fsSourceCode);
         fs.init(gl);
 
         Program program = new Program(vs, fs);
@@ -66,30 +66,14 @@ public class ProgramLoader {
         return program;
     }
 
-    public Program createProgram(GL3 gl, String vsSourceCode, String fsSourceCode) throws FileNotFoundException,
-            CompilationFailedException {
-        VertexShader vs = new VertexShader(vsSourceCode);
+    public Program createProgram(GL3 gl, String programName, String vsSourceCode, String fsSourceCode)
+            throws FileNotFoundException, CompilationFailedException {
+        VertexShader vs = new VertexShader(programName + " : Vertex Shader", vsSourceCode);
         vs.init(gl);
-        FragmentShader fs = new FragmentShader(fsSourceCode);
+        FragmentShader fs = new FragmentShader(programName + " : Fragment Shader", fsSourceCode);
         fs.init(gl);
 
         Program program = new Program(vs, fs);
-        int index = program.init(gl);
-        programs.put(index, program);
-
-        return program;
-    }
-
-    public Program createProgram(GL3 gl, String vs_src, String gs_src, String fs_src) throws FileNotFoundException,
-            CompilationFailedException {
-        VertexShader vs = new VertexShader(vs_src);
-        vs.init(gl);
-        GeometryShader gs = new GeometryShader(gs_src);
-        gs.init(gl);
-        FragmentShader fs = new FragmentShader(fs_src);
-        fs.init(gl);
-
-        Program program = new Program(vs, gs, fs);
         int index = program.init(gl);
         programs.put(index, program);
 

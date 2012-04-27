@@ -8,12 +8,12 @@ import javax.media.opengl.GL3;
 import openglCommon.exceptions.CompilationFailedException;
 
 public class VertexShader extends Shader {
-    public VertexShader(File file) throws FileNotFoundException {
-        super(file);
+    public VertexShader(String shaderName, File file) throws FileNotFoundException {
+        super(shaderName, file);
     }
 
-    public VertexShader(String shaderCode) throws FileNotFoundException {
-        super(shaderCode);
+    public VertexShader(String shaderName, String shaderCode) throws FileNotFoundException {
+        super(shaderName, shaderCode);
     }
 
     public void init(GL3 gl) throws CompilationFailedException {

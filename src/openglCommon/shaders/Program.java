@@ -78,36 +78,39 @@ public class Program {
         }
 
         warningsGiven = false;
-        checkCompatibility(vs.getOuts(), fs.getIns());
+        checkCompatibility(vs, fs);
 
         return pointer;
     }
 
     @SuppressWarnings("rawtypes")
-    private boolean checkCompatibility(HashMap<String, Class> outs, HashMap<String, Class> ins) {
+    private boolean checkCompatibility(Shader vs, Shader fs) {
+        HashMap<String, Class> outs = vs.getOuts();
+        HashMap<String, Class> ins = fs.getIns();
+
         boolean compatible = true;
 
         if (!warningsGiven) {
             for (Map.Entry<String, Class> outEntry : outs.entrySet()) {
                 if (!ins.containsKey(outEntry.getKey())) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: output variable " + outEntry.getKey()
+                    System.err.println("SHADER WARNING: " + vs.getName() + " output variable " + outEntry.getKey()
                             + " has no matching input variable.");
                 } else if (!ins.get(outEntry.getKey()).equals(outs.get(outEntry.getKey()))) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: Type of output variable " + outEntry.getKey()
-                            + " does not match with type of input variable");
+                    System.err.println("SHADER WARNING: " + vs.getName() + " Type of output variable "
+                            + outEntry.getKey() + " does not match with type of input variable");
                 }
             }
             for (Map.Entry<String, Class> inEntry : ins.entrySet()) {
                 if (!outs.containsKey(inEntry.getKey())) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: input variable " + inEntry.getKey()
+                    System.err.println("SHADER WARNING: " + fs.getName() + " input variable " + inEntry.getKey()
                             + " has no matching output variable.");
                 } else if (!ins.get(inEntry.getKey()).equals(outs.get(inEntry.getKey()))) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: Type of input variable " + inEntry.getKey()
-                            + " does not match with type of output variable");
+                    System.err.println("SHADER WARNING: " + fs.getName() + " Type of input variable "
+                            + inEntry.getKey() + " does not match with type of output variable");
                 }
             }
         }
@@ -116,7 +119,10 @@ public class Program {
     }
 
     @SuppressWarnings("rawtypes")
-    private boolean checkUniforms(HashMap<String, Class> vsUniforms, HashMap<String, Class> fsUniforms) {
+    private boolean checkUniforms(Shader vs, Shader fs) {
+        HashMap<String, Class> vsUniforms = vs.getUniforms();
+        HashMap<String, Class> fsUniforms = fs.getUniforms();
+
         boolean allPresent = true;
 
         if (!warningsGiven) {
@@ -138,7 +144,7 @@ public class Program {
 
                 if (!thisEntryAvailable) {
                     allPresent = false;
-                    System.err.println("SHADER WARNING: uniform variable " + uniformEntry.getKey()
+                    System.err.println("SHADER WARNING: " + fs.getName() + " uniform variable " + uniformEntry.getKey()
                             + " not present at use.");
                 }
             }
@@ -148,7 +154,8 @@ public class Program {
     }
 
     @SuppressWarnings("rawtypes")
-    private boolean checkIns(HashMap<String, Class> vsIns, GLSLAttrib... attribs) {
+    private boolean checkIns(Shader vs, GLSLAttrib... attribs) {
+        HashMap<String, Class> vsIns = vs.getIns();
         boolean allPresent = true;
 
         if (!warningsGiven) {
@@ -162,7 +169,8 @@ public class Program {
 
                 if (!thisEntryAvailable) {
                     allPresent = false;
-                    System.err.println("SHADER WARNING: input variable " + inEntry.getKey() + " not present at use.");
+                    System.err.println("SHADER WARNING: " + vs.getName() + " input variable " + inEntry.getKey()
+                            + " not present at use.");
                 }
             }
         }
@@ -207,7 +215,7 @@ public class Program {
             passUniform(gl, var.getKey(), var.getValue());
         }
 
-        checkUniforms(vs.getUniforms(), fs.getUniforms());
+        checkUniforms(vs, fs);
     }
 
     public void linkAttribs(GL3 gl, GLSLAttrib... attribs) {
@@ -220,7 +228,7 @@ public class Program {
             nextStart += attrib.buffer.capacity() * Buffers.SIZEOF_FLOAT;
         }
 
-        checkIns(vs.getIns(), attribs);
+        checkIns(vs, attribs);
 
         warningsGiven = true;
     }

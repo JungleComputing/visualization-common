@@ -8,12 +8,12 @@ import javax.media.opengl.GL3;
 import openglCommon.exceptions.CompilationFailedException;
 
 public class FragmentShader extends Shader {
-    public FragmentShader(File file) throws FileNotFoundException {
-        super(file);
+    public FragmentShader(String shaderName, File file) throws FileNotFoundException {
+        super(shaderName, file);
     }
 
-    public FragmentShader(String shaderCode) throws FileNotFoundException {
-        super(shaderCode);
+    public FragmentShader(String shaderName, String shaderCode) throws FileNotFoundException {
+        super(shaderName, shaderCode);
     }
 
     @Override

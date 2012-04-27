@@ -15,6 +15,7 @@ import openglCommon.exceptions.UninitializedException;
 import com.jogamp.common.nio.Buffers;
 
 public abstract class Shader {
+    String   shaderName;
     String   filename;
 
     String[] source;
@@ -28,7 +29,8 @@ public abstract class Shader {
                                                 // fragment shader.
 
     @SuppressWarnings("rawtypes")
-    public Shader(File file) throws FileNotFoundException {
+    public Shader(String shaderName, File file) throws FileNotFoundException {
+        this.shaderName = shaderName;
         this.filename = file.getName();
 
         // Read file
@@ -53,7 +55,8 @@ public abstract class Shader {
     }
 
     @SuppressWarnings("rawtypes")
-    public Shader(String shaderCode) {
+    public Shader(String shaderName, String shaderCode) {
+        this.shaderName = shaderName;
         this.filename = "";
 
         StringBuffer buf = new StringBuffer();
@@ -206,5 +209,9 @@ public abstract class Shader {
     @SuppressWarnings("rawtypes")
     public HashMap<String, Class> getUniforms() {
         return uniforms;
+    }
+
+    public String getName() {
+        return shaderName;
     }
 }
