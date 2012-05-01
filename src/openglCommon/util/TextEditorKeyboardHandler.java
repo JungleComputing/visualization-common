@@ -564,7 +564,7 @@ public class TextEditorKeyboardHandler extends InputHandler {
         return result;
     }
 
-    private boolean isMovementKey(KeyEvent e) {
+    public boolean isMovementKey(KeyEvent e) {
         int code = e.getKeyCode();
         if (code == KeyEvent.VK_UP || code == KeyEvent.VK_DOWN || code == KeyEvent.VK_LEFT || code == KeyEvent.VK_RIGHT
                 || code == KeyEvent.VK_PAGE_UP || code == KeyEvent.VK_PAGE_DOWN || code == KeyEvent.VK_HOME
