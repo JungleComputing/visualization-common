@@ -289,4 +289,50 @@ public class VectorFMath {
 
         return result;
     }
+
+    public static VecF3[] bezierCurve(int steps, VecF3 startLocation, VecF3 startControl, VecF3 endControl,
+            VecF3 endLocation) {
+        VecF3[] newBezierPoints = new VecF3[steps];
+        for (int i = 0; i < steps; i++) {
+            newBezierPoints[i] = new VecF3();
+        }
+
+        float t = 1f / steps;
+        float temp = t * t;
+
+        for (int coord = 0; coord < 3; coord++) {
+            float p[] = new float[4];
+            p[0] = startLocation.get(coord);
+            p[1] = (startLocation.add(startControl)).get(coord);
+            p[2] = (endLocation.add(endControl.neg())).get(coord);
+            p[3] = endLocation.get(coord);
+
+            // The algorithm itself begins here ==
+            float f, fd, fdd, fddd, fdd_per_2, fddd_per_2, fddd_per_6;
+
+            // I've tried to optimize the amount of
+            // multiplications here, but these are exactly
+            // the same formulas that were derived earlier
+            // for f(0), f'(0)*t etc.
+            f = p[0];
+            fd = 3 * (p[1] - p[0]) * t;
+            fdd_per_2 = 3 * (p[0] - 2 * p[1] + p[2]) * temp;
+            fddd_per_2 = 3 * (3 * (p[1] - p[2]) + p[3] - p[0]) * temp * t;
+
+            fddd = fddd_per_2 + fddd_per_2;
+            fdd = fdd_per_2 + fdd_per_2;
+            fddd_per_6 = fddd_per_2 * (1f / 3);
+
+            for (int loop = 0; loop < steps; loop++) {
+                newBezierPoints[loop].set(coord, f);
+
+                f = f + fd + fdd_per_2 + fddd_per_6;
+                fd = fd + fdd + fddd_per_2;
+                fdd = fdd + fddd;
+                fdd_per_2 = fdd_per_2 + fddd_per_2;
+            }
+        }
+
+        return newBezierPoints;
+    }
 }
