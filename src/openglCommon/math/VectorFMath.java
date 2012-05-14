@@ -335,4 +335,25 @@ public class VectorFMath {
 
         return newBezierPoints;
     }
+
+    public static VecF4[] interpolateColors(int steps, VecF4 startColor, VecF4 endColor) {
+        VecF4[] newColors = new VecF4[steps];
+
+        float rstep = (endColor.get(0) - startColor.get(0)) / steps;
+        float gstep = (endColor.get(1) - startColor.get(1)) / steps;
+        float bstep = (endColor.get(2) - startColor.get(2)) / steps;
+        float astep = (endColor.get(3) - startColor.get(3)) / steps;
+
+        for (int i = 0; i < steps; i++) {
+            VecF4 stepColor = new VecF4();
+            stepColor.set(0, startColor.get(0) + (rstep * i));
+            stepColor.set(1, startColor.get(1) + (gstep * i));
+            stepColor.set(2, startColor.get(2) + (bstep * i));
+            stepColor.set(3, startColor.get(3) + (astep * i));
+
+            newColors[i] = stepColor;
+        }
+
+        return newColors;
+    }
 }
