@@ -32,19 +32,19 @@ import com.jogamp.graph.geom.Vertex;
 import com.jogamp.graph.geom.opengl.SVertex;
 
 public class MultiColorText extends Model {
-    private boolean                      initialized = false;
+    private boolean initialized = false;
 
     private HashMap<Integer, GlyphShape> glyphs;
-    private HashMap<Integer, VecF4>      colors;
+    private HashMap<Integer, VecF4> colors;
 
-    FloatBuffer                          vertexColors;
+    FloatBuffer vertexColors;
 
-    private final BoundingBox            bbox;
-    private FloatBuffer                  tCoords;
+    private final BoundingBox bbox;
+    private FloatBuffer tCoords;
 
-    private FBO                          fbo;
-    private RBOQuad                      quad;
-    private String                       cachedString;
+    private FBO fbo;
+    private RBOQuad quad;
+    private String cachedString;
 
     public MultiColorText(Material material) {
         super(material, vertex_format.TRIANGLES);

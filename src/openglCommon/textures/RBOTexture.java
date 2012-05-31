@@ -2,8 +2,6 @@ package openglCommon.textures;
 
 import javax.media.opengl.GL3;
 
-import openglCommon.exceptions.UninitializedException;
-
 import com.jogamp.common.nio.Buffers;
 
 public class RBOTexture extends Texture2D {
@@ -39,12 +37,5 @@ public class RBOTexture extends Texture2D {
 
         // Unbind, now ready for use
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
-    }
-
-    @Override
-    public void use(GL3 gl) throws UninitializedException {
-        gl.glActiveTexture(glMultiTexUnit);
-        gl.glEnable(GL3.GL_TEXTURE_2D);
-        gl.glBindTexture(GL3.GL_TEXTURE_2D, getPointer());
     }
 }

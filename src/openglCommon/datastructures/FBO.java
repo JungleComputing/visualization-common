@@ -11,12 +11,12 @@ import openglCommon.textures.RBOTexture;
 import openglCommon.textures.Texture2D;
 
 public class FBO {
-    private final IntBuffer  fboPointer;
-    private final IntBuffer  rboPointer;
+    private final IntBuffer fboPointer;
+    private final IntBuffer rboPointer;
     private final RBOTexture rboTexture;
 
-    private final int        width, height;
-    private boolean          initialized = false;
+    private final int width, height;
+    private boolean initialized = false;
 
     public FBO(int width, int height, int glMultitexUnit) {
         this.width = width;

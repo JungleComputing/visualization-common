@@ -27,16 +27,16 @@ import com.jogamp.graph.geom.Vertex;
 import com.jogamp.graph.geom.opengl.SVertex;
 
 public class Text extends Model {
-    private boolean           initialized  = false;
+    private boolean initialized = false;
 
-    private String            cachedString = "";
+    private String cachedString = "";
 
     private final BoundingBox bbox;
-    private FloatBuffer       tCoords;
+    private FloatBuffer tCoords;
 
-    private FBO               fbo;
+    private FBO fbo;
 
-    private RBOQuad           quad;
+    private RBOQuad quad;
 
     public Text(Material material) {
         super(material, vertex_format.TRIANGLES);

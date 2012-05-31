@@ -8,22 +8,27 @@ import openglCommon.math.VecF3;
 import openglCommon.math.VecF4;
 import openglCommon.math.VectorFMath;
 import openglCommon.models.Model;
+import openglCommon.util.Settings;
 
 public class Sphere extends Model {
-    private static float X        = 0.525731112119133606f;
-    private static float Z        = 0.850650808352039932f;
+    Settings settings = Settings.getInstance();
 
-    static VecF3[]       vdata    = { new VecF3(-X, 0f, Z), new VecF3(X, 0f, Z), new VecF3(-X, 0f, -Z),
-            new VecF3(X, 0f, -Z), new VecF3(0f, Z, X), new VecF3(0f, Z, -X), new VecF3(0f, -Z, X),
-            new VecF3(0f, -Z, -X), new VecF3(Z, X, 0f), new VecF3(-Z, X, 0f), new VecF3(Z, -X, 0f),
-            new VecF3(-Z, -X, 0f) };
+    private boolean texCoordsIn3D = false;
 
-    static int[][]       tindices = { { 1, 4, 0 }, { 4, 9, 0 }, { 4, 5, 9 }, { 8, 5, 4 }, { 1, 8, 4 }, { 1, 10, 8 },
+    private static float X = 0.525731112119133606f;
+    private static float Z = 0.850650808352039932f;
+
+    static VecF3[] vdata = { new VecF3(-X, 0f, Z), new VecF3(X, 0f, Z), new VecF3(-X, 0f, -Z), new VecF3(X, 0f, -Z),
+            new VecF3(0f, Z, X), new VecF3(0f, Z, -X), new VecF3(0f, -Z, X), new VecF3(0f, -Z, -X),
+            new VecF3(Z, X, 0f), new VecF3(-Z, X, 0f), new VecF3(Z, -X, 0f), new VecF3(-Z, -X, 0f) };
+
+    static int[][] tindices = { { 1, 4, 0 }, { 4, 9, 0 }, { 4, 5, 9 }, { 8, 5, 4 }, { 1, 8, 4 }, { 1, 10, 8 },
             { 10, 3, 8 }, { 8, 3, 5 }, { 3, 2, 5 }, { 3, 7, 2 }, { 3, 10, 7 }, { 10, 6, 7 }, { 6, 11, 7 },
             { 6, 0, 11 }, { 6, 1, 0 }, { 10, 1, 6 }, { 11, 0, 9 }, { 2, 11, 9 }, { 5, 2, 9 }, { 11, 2, 7 } };
 
-    public Sphere(Material material, int ndiv, float radius, VecF3 center) {
+    public Sphere(Material material, int ndiv, float radius, VecF3 center, boolean texCoordsIn3D) {
         super(material, vertex_format.TRIANGLES);
+        this.texCoordsIn3D = texCoordsIn3D;
 
         List<VecF3> points3List = new ArrayList<VecF3>();
         List<VecF3> normals3List = new ArrayList<VecF3>();
@@ -66,20 +71,17 @@ public class Sphere extends Model {
             pointsList.add(rb);
             pointsList.add(rc);
 
-            tCoords3List.add(ra.add(new VecF3(r, r, r)).div(2 * r));// new
-                                                                    // Vec3((ra.get(0)
-                                                                    // + r) / (2
-                                                                    // * r),
-                                                                    // (ra.get(1)
-                                                                    // + r) / (2
-                                                                    // * r),
-                                                                    // (ra.get(2)
-                                                                    // + r) / (2
-                                                                    // * r)));
-            tCoords3List
-                    .add(new VecF3((rb.get(0) + r) / (2 * r), (rb.get(1) + r) / (2 * r), (rb.get(2) + r) / (2 * r)));
-            tCoords3List
-                    .add(new VecF3((rc.get(0) + r) / (2 * r), (rc.get(1) + r) / (2 * r), (rc.get(2) + r) / (2 * r)));
+            if (texCoordsIn3D) {
+                // tCoords3List.add(ra.add(new VecF3(r, r, r)).div(2 * r));
+                tCoords3List.add(new VecF3((ra.get(0) + r) / (2 * r), (ra.get(1) + r) / (2 * r), (ra.get(2) + r)
+                        / (2 * r)));
+                tCoords3List.add(new VecF3((rb.get(0) + r) / (2 * r), (rb.get(1) + r) / (2 * r), (rb.get(2) + r)
+                        / (2 * r)));
+                tCoords3List.add(new VecF3((rc.get(0) + r) / (2 * r), (rc.get(1) + r) / (2 * r), (rc.get(2) + r)
+                        / (2 * r)));
+            } else {
+                // tCoords3List.add();
+            }
         } else {
             VecF3 ab = new VecF3();
             VecF3 ac = new VecF3();
