@@ -1,8 +1,50 @@
 package openglCommon.math;
 
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+
 public class MatrixFMath {
 
     public static double degreesToRadians = Math.PI / 180.0;
+
+    public static MatF3 getNormalMatrix(MatF4 mv) {
+        MatF3 result = new MatF3();
+
+        double[][] d = new double[3][3];
+
+        d[0][0] = (double) mv.get(0);
+        d[0][1] = (double) mv.get(1);
+        d[0][2] = (double) mv.get(2);
+
+        d[1][0] = (double) mv.get(4);
+        d[1][1] = (double) mv.get(5);
+        d[1][2] = (double) mv.get(6);
+
+        d[2][0] = (double) mv.get(8);
+        d[2][1] = (double) mv.get(9);
+        d[2][2] = (double) mv.get(10);
+
+        RealMatrix m = new Array2DRowRealMatrix(d);
+        LUDecomposition s = new LUDecomposition(m);
+        RealMatrix inverse = s.getSolver().getInverse();
+
+        inverse = inverse.transpose();
+
+        result.set(0, (float) inverse.getEntry(0, 0));
+        result.set(1, (float) inverse.getEntry(0, 1));
+        result.set(2, (float) inverse.getEntry(0, 1));
+
+        result.set(3, (float) inverse.getEntry(1, 0));
+        result.set(4, (float) inverse.getEntry(1, 1));
+        result.set(5, (float) inverse.getEntry(1, 2));
+
+        result.set(6, (float) inverse.getEntry(2, 0));
+        result.set(7, (float) inverse.getEntry(2, 1));
+        result.set(8, (float) inverse.getEntry(2, 2));
+
+        return result;
+    }
 
     /**
      * Helper method that creates a Orthogonal matrix
@@ -32,8 +74,8 @@ public class MatrixFMath {
         float r = right;
         float l = left;
 
-        MatF4 m = new MatF4(2 / dX, 0, 0, -(l + r) / dX, 0, 2 / dY, 0, -(t + b) / dY, 0, 0, -2 / (f - n), -(f + n) / dZ,
-                0, 0, 0, 1);
+        MatF4 m = new MatF4(2 / dX, 0, 0, -(l + r) / dX, 0, 2 / dY, 0, -(t + b) / dY, 0, 0, -2 / (f - n),
+                -(f + n) / dZ, 0, 0, 0, 1);
         return m;
     }
 
@@ -306,8 +348,8 @@ public class MatrixFMath {
         y = n.v[1];
         z = n.v[2];
 
-        MatF4 R = new MatF4(t * x * x + c, t * x * y - s * z, t * x * z + s * y, 0f, t * x * y + s * z, t * y * y + c, t
-                * y * z - s * x, 0f, t * x * z - s * y, t * y * z + s * x, t * z * z + c, 0f, 0f, 0f, 0f, 1f
+        MatF4 R = new MatF4(t * x * x + c, t * x * y - s * z, t * x * z + s * y, 0f, t * x * y + s * z, t * y * y + c,
+                t * y * z - s * x, 0f, t * x * z - s * y, t * y * z + s * x, t * z * z + c, 0f, 0f, 0f, 0f, 1f
 
         );
 

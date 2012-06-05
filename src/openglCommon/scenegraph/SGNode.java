@@ -7,21 +7,28 @@ import javax.media.opengl.GL3;
 import openglCommon.math.MatF4;
 import openglCommon.math.MatrixFMath;
 import openglCommon.math.VecF3;
+import openglCommon.models.LightSource;
 import openglCommon.models.Model;
 import openglCommon.shaders.Program;
+import openglCommon.shaders.ProgramLoader;
 
 public class SGNode {
-    protected MatF4             TMatrix;
+    protected ProgramLoader loader;
+    protected MatF4 TMatrix;
     // protected Mat4 RMatrix;
     // protected Mat4 SMatrix;
 
     protected ArrayList<SGNode> children;
 
-    protected ArrayList<Model>  models;
+    protected ArrayList<Model> models;
 
-    private boolean             initialized = false;
+    protected ArrayList<LightSource> lightsources;
 
-    public SGNode() {
+    private boolean initialized = false;
+
+    public SGNode(ProgramLoader loader) {
+        this.loader = loader;
+
         TMatrix = new MatF4();
         // RMatrix = new Mat4();
         // SMatrix = new Mat4();
