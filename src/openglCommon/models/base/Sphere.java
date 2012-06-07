@@ -63,9 +63,9 @@ public class Sphere extends Model {
             normalsList.add(nb);
             normalsList.add(nc);
 
-            VecF3 ra = a.clone().mul(r);
-            VecF3 rb = b.clone().mul(r);
-            VecF3 rc = c.clone().mul(r);
+            VecF3 ra = na.mul(r);
+            VecF3 rb = nb.mul(r);
+            VecF3 rc = nc.mul(r);
 
             pointsList.add(ra);
             pointsList.add(rb);

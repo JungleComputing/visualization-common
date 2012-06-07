@@ -11,29 +11,17 @@ public class MatrixFMath {
     public static MatF3 getNormalMatrix(MatF4 mv) {
         MatF3 result = new MatF3();
 
-        double[][] d = new double[3][3];
-
-        d[0][0] = (double) mv.get(0);
-        d[0][1] = (double) mv.get(1);
-        d[0][2] = (double) mv.get(2);
-
-        d[1][0] = (double) mv.get(4);
-        d[1][1] = (double) mv.get(5);
-        d[1][2] = (double) mv.get(6);
-
-        d[2][0] = (double) mv.get(8);
-        d[2][1] = (double) mv.get(9);
-        d[2][2] = (double) mv.get(10);
+        double[][] d = { { mv.get(0), mv.get(1), mv.get(2) }, { mv.get(4), mv.get(5), mv.get(6) },
+                { mv.get(8), mv.get(9), mv.get(10) } };
 
         RealMatrix m = new Array2DRowRealMatrix(d);
-        LUDecomposition s = new LUDecomposition(m);
-        RealMatrix inverse = s.getSolver().getInverse();
+        RealMatrix inverse = new LUDecomposition(m).getSolver().getInverse();
 
         inverse = inverse.transpose();
 
         result.set(0, (float) inverse.getEntry(0, 0));
         result.set(1, (float) inverse.getEntry(0, 1));
-        result.set(2, (float) inverse.getEntry(0, 1));
+        result.set(2, (float) inverse.getEntry(0, 2));
 
         result.set(3, (float) inverse.getEntry(1, 0));
         result.set(4, (float) inverse.getEntry(1, 1));
