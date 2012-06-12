@@ -15,7 +15,7 @@ public class Texture2D extends Texture {
     protected int width, height;
     protected IntBuffer pointer;
 
-    private boolean initialized = false;
+    protected boolean initialized = false;
 
     public Texture2D(int glMultitexUnit) {
         super(glMultitexUnit);

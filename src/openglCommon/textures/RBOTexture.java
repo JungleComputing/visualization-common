@@ -37,5 +37,7 @@ public class RBOTexture extends Texture2D {
 
         // Unbind, now ready for use
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
+
+        initialized = true;
     }
 }
