@@ -51,22 +51,22 @@ public class Quad extends Model {
 
     private int newQuad(Point4[] points, int arrayindex, Point4[] source, VecF3[] tCoords, int a, int b, int c, int d) {
         points[arrayindex] = source[a];
-        tCoords[arrayindex] = new VecF3(source[a]);
+        tCoords[arrayindex] = new VecF3(0, 0, 0);
         arrayindex++;
         points[arrayindex] = source[b];
-        tCoords[arrayindex] = new VecF3(source[b]);
+        tCoords[arrayindex] = new VecF3(0, 1, 0);
         arrayindex++;
         points[arrayindex] = source[c];
-        tCoords[arrayindex] = new VecF3(source[c]);
+        tCoords[arrayindex] = new VecF3(1, 1, 0);
         arrayindex++;
         points[arrayindex] = source[a];
-        tCoords[arrayindex] = new VecF3(source[a]);
+        tCoords[arrayindex] = new VecF3(0, 0, 0);
         arrayindex++;
         points[arrayindex] = source[c];
-        tCoords[arrayindex] = new VecF3(source[c]);
+        tCoords[arrayindex] = new VecF3(1, 1, 0);
         arrayindex++;
         points[arrayindex] = source[d];
-        tCoords[arrayindex] = new VecF3(source[d]);
+        tCoords[arrayindex] = new VecF3(1, 0, 0);
         arrayindex++;
 
         return arrayindex;
