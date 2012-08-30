@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 import javax.media.opengl.GL3;
 
-import openglCommon.datastructures.FBO;
 import openglCommon.datastructures.GLSLAttrib;
+import openglCommon.datastructures.HDRFBO;
 import openglCommon.datastructures.Material;
 import openglCommon.datastructures.VBO;
 import openglCommon.exceptions.UninitializedException;
@@ -32,19 +32,19 @@ import com.jogamp.graph.geom.Vertex;
 import com.jogamp.graph.geom.opengl.SVertex;
 
 public class MultiColorText extends Model {
-    private boolean initialized = false;
+    private boolean                            initialized = false;
 
-    private HashMap<Integer, GlyphShape> glyphs;
-    private HashMap<Integer, VecF4> colors;
+    private final HashMap<Integer, GlyphShape> glyphs;
+    private final HashMap<Integer, VecF4>      colors;
 
-    FloatBuffer vertexColors;
+    FloatBuffer                                vertexColors;
 
-    private final BoundingBox bbox;
-    private FloatBuffer tCoords;
+    private final BoundingBox                  bbox;
+    private FloatBuffer                        tCoords;
 
-    private FBO fbo;
-    private RBOQuad quad;
-    private String cachedString;
+    private HDRFBO                             fbo;
+    private RBOQuad                            quad;
+    private String                             cachedString;
 
     public MultiColorText(Material material) {
         super(material, vertex_format.TRIANGLES);
@@ -53,6 +53,7 @@ public class MultiColorText extends Model {
 
         this.bbox = new BoundingBox();
         colors = new HashMap<Integer, VecF4>();
+        glyphs = new HashMap<Integer, GlyphShape>();
 
         numVertices = 0;
 
@@ -67,23 +68,28 @@ public class MultiColorText extends Model {
     @Override
     public void init(GL3 gl) {
         if (!initialized) {
-            GLSLAttrib vAttrib = new GLSLAttrib(vertices, "MCvertex", GLSLAttrib.SIZE_FLOAT, 4);
-            GLSLAttrib cAttrib = new GLSLAttrib(vertexColors, "MCvertexColors", GLSLAttrib.SIZE_FLOAT, 4);
-            GLSLAttrib tAttrib = new GLSLAttrib(texCoords, "MCtexCoord", GLSLAttrib.SIZE_FLOAT, 2);
+            GLSLAttrib vAttrib = new GLSLAttrib(vertices, "MCvertex",
+                    GLSLAttrib.SIZE_FLOAT, 4);
+            GLSLAttrib cAttrib = new GLSLAttrib(vertexColors, "MCvertexColors",
+                    GLSLAttrib.SIZE_FLOAT, 4);
+            GLSLAttrib tAttrib = new GLSLAttrib(texCoords, "MCtexCoord",
+                    GLSLAttrib.SIZE_FLOAT, 2);
 
             vbo = new VBO(gl, vAttrib, cAttrib, tAttrib);
         }
         initialized = true;
     }
 
-    public void setString(GL3 gl, Program program, TypecastFont font, String str, Color4 basicColor, int fontSize) {
+    public void setString(GL3 gl, Program program, TypecastFont font,
+            String str, Color4 basicColor, int fontSize) {
         if (cachedString.compareTo(str) != 0) {
-            colors = new HashMap<Integer, VecF4>();
-            glyphs = new HashMap<Integer, GlyphShape>();
+            colors.clear();
+            glyphs.clear();
 
             if (str.compareTo(cachedString) != 0) {
                 // Get the outline shapes for the current string in this font
-                ArrayList<OutlineShape> shapes = font.getOutlineShapes(str, fontSize, SVertex.factory());
+                ArrayList<OutlineShape> shapes = font.getOutlineShapes(str,
+                        fontSize, SVertex.factory());
 
                 // Make a set of glyph shapes from the outlines
                 int numGlyps = shapes.size();
@@ -94,7 +100,8 @@ public class MultiColorText extends Model {
                         glyphs.put(index, null);
                         continue;
                     }
-                    GlyphShape glyphShape = new GlyphShape(SVertex.factory(), shapes.get(index));
+                    GlyphShape glyphShape = new GlyphShape(SVertex.factory(),
+                            shapes.get(index));
 
                     if (glyphShape.getNumVertices() < 3) {
                         colors.put(index, null);
@@ -149,21 +156,31 @@ public class MultiColorText extends Model {
             i++;
         }
 
-        vbo.delete(gl);
+        if (vbo != null) {
+            vbo.delete(gl);
+        }
         this.vertices = VectorFMath.toBuffer(myVertices);
         this.vertexColors = VectorFMath.vec4ListToBuffer(vertexColors);
         this.tCoords = VectorFMath.toBuffer(myTexCoords);
-        GLSLAttrib vAttrib = new GLSLAttrib(this.vertices, "MCvertex", GLSLAttrib.SIZE_FLOAT, 4);
-        GLSLAttrib cAttrib = new GLSLAttrib(this.vertexColors, "MCvertexColor", GLSLAttrib.SIZE_FLOAT, 4);
-        GLSLAttrib tAttrib = new GLSLAttrib(this.tCoords, "MCtexCoord", GLSLAttrib.SIZE_FLOAT, 2);
+        GLSLAttrib vAttrib = new GLSLAttrib(this.vertices, "MCvertex",
+                GLSLAttrib.SIZE_FLOAT, 4);
+        GLSLAttrib cAttrib = new GLSLAttrib(this.vertexColors, "MCvertexColor",
+                GLSLAttrib.SIZE_FLOAT, 4);
+        GLSLAttrib tAttrib = new GLSLAttrib(this.tCoords, "MCtexCoord",
+                GLSLAttrib.SIZE_FLOAT, 2);
         vbo = new VBO(gl, vAttrib, cAttrib, tAttrib);
 
         this.numVertices = vertices.size();
 
         // Prepare the FBO for 2 pass rendering
         int textureWidth = 1024;
-        int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox.getWidth()) + 0.5f);
-        fbo = new FBO(textureWidth, textureHeight, GL3.GL_TEXTURE6);
+        int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox
+                .getWidth()) + 0.5f);
+
+        if (fbo != null) {
+            fbo.delete(gl);
+        }
+        fbo = new HDRFBO(textureWidth, textureHeight, GL3.GL_TEXTURE0);
         fbo.init(gl);
 
         // Prepare the quad, to be rendered with texture in case of 2
@@ -172,8 +189,8 @@ public class MultiColorText extends Model {
         if (quad != null) {
             quad.delete(gl);
         }
-
-        quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(), bbox.getCenter());
+        quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(),
+                bbox.getCenter());
         quad.init(gl);
 
         initialized = true;
@@ -185,7 +202,8 @@ public class MultiColorText extends Model {
         }
     }
 
-    public void setSubstringColorWordBounded(GL3 gl, String subString, Color4 newColor) {
+    public void setSubstringColorWordBounded(GL3 gl, String subString,
+            Color4 newColor) {
         if (cachedString.contains(subString) && subString.compareTo("") != 0) {
             Pattern p = Pattern.compile("\\b" + subString + "\\b");
             Matcher m = p.matcher(cachedString);
@@ -213,7 +231,8 @@ public class MultiColorText extends Model {
         }
     }
 
-    public void setSubstringAtIndexColor(GL3 gl, int startIndex, String subString, Color4 newColor) {
+    public void setSubstringAtIndexColor(GL3 gl, int startIndex,
+            String subString, Color4 newColor) {
         if (cachedString.contains(subString) && subString.compareTo("") != 0) {
             for (int i = 0; i < subString.length(); i++) {
                 colors.put(startIndex + i, newColor);
@@ -225,7 +244,8 @@ public class MultiColorText extends Model {
         makeVBO(gl);
     }
 
-    private void render2FBO(GL3 gl, Program program) throws UninitializedException {
+    private void render2FBO(GL3 gl, Program program)
+            throws UninitializedException {
         MatF4 PMVMatrix = new MatF4();
 
         fbo.bind(gl);
@@ -301,12 +321,15 @@ public class MultiColorText extends Model {
         }
     }
 
-    public static MatF4 getPMVForHUD(float canvasWidth, float canvasHeight, float RasterPosX, float RasterPosY) {
+    public static MatF4 getPMVForHUD(float canvasWidth, float canvasHeight,
+            float RasterPosX, float RasterPosY) {
 
         MatF4 mv = new MatF4();
-        mv = mv.mul(MatrixFMath.translate((RasterPosX / canvasWidth), (RasterPosY / canvasHeight), 0f));
+        mv = mv.mul(MatrixFMath.translate((RasterPosX / canvasWidth),
+                (RasterPosY / canvasHeight), 0f));
 
-        MatF4 PMatrix = MatrixFMath.ortho(0f, canvasWidth, 0f, canvasHeight, -1f, 1f);
+        MatF4 PMatrix = MatrixFMath.ortho(0f, canvasWidth, 0f, canvasHeight,
+                -1f, 1f);
         mv = mv.mul(PMatrix);
 
         return mv;
