@@ -321,6 +321,11 @@ public class MultiColorText extends Model {
         }
     }
 
+    @Override
+    public String toString() {
+        return cachedString;
+    }
+
     public static MatF4 getPMVForHUD(float canvasWidth, float canvasHeight,
             float RasterPosX, float RasterPosY) {
 

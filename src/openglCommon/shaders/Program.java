@@ -24,6 +24,7 @@ public class Program {
 
     private final HashMap<String, FloatBuffer> uniformFloatMatrices;
     private final HashMap<String, FloatBuffer> uniformFloatVectors;
+    private final HashMap<String, Boolean>     uniformBooleans;
     private final HashMap<String, Integer>     uniformInts;
     private final HashMap<String, Float>       uniformFloats;
 
@@ -36,6 +37,7 @@ public class Program {
         this.fs = fs;
         uniformFloatMatrices = new HashMap<String, FloatBuffer>();
         uniformFloatVectors = new HashMap<String, FloatBuffer>();
+        uniformBooleans = new HashMap<String, Boolean>();
         uniformInts = new HashMap<String, Integer>();
         uniformFloats = new HashMap<String, Float>();
     }
@@ -47,6 +49,7 @@ public class Program {
         this.fs = fs;
         uniformFloatMatrices = new HashMap<String, FloatBuffer>();
         uniformFloatVectors = new HashMap<String, FloatBuffer>();
+        uniformBooleans = new HashMap<String, Boolean>();
         uniformInts = new HashMap<String, Integer>();
         uniformFloats = new HashMap<String, Float>();
 
@@ -94,23 +97,29 @@ public class Program {
             for (Map.Entry<String, Class> outEntry : outs.entrySet()) {
                 if (!ins.containsKey(outEntry.getKey())) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + vs.getName() + " output variable " + outEntry.getKey()
+                    System.err.println("SHADER WARNING: " + vs.getName()
+                            + " output variable " + outEntry.getKey()
                             + " has no matching input variable.");
-                } else if (!ins.get(outEntry.getKey()).equals(outs.get(outEntry.getKey()))) {
+                } else if (!ins.get(outEntry.getKey()).equals(
+                        outs.get(outEntry.getKey()))) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + vs.getName() + " Type of output variable "
-                            + outEntry.getKey() + " does not match with type of input variable");
+                    System.err.println("SHADER WARNING: " + vs.getName()
+                            + " Type of output variable " + outEntry.getKey()
+                            + " does not match with type of input variable");
                 }
             }
             for (Map.Entry<String, Class> inEntry : ins.entrySet()) {
                 if (!outs.containsKey(inEntry.getKey())) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + fs.getName() + " input variable " + inEntry.getKey()
+                    System.err.println("SHADER WARNING: " + fs.getName()
+                            + " input variable " + inEntry.getKey()
                             + " has no matching output variable.");
-                } else if (!ins.get(inEntry.getKey()).equals(outs.get(inEntry.getKey()))) {
+                } else if (!ins.get(inEntry.getKey()).equals(
+                        outs.get(inEntry.getKey()))) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + fs.getName() + " Type of input variable "
-                            + inEntry.getKey() + " does not match with type of output variable");
+                    System.err.println("SHADER WARNING: " + fs.getName()
+                            + " Type of input variable " + inEntry.getKey()
+                            + " does not match with type of output variable");
                 }
             }
         }
@@ -130,21 +139,26 @@ public class Program {
             neededUniforms.putAll(vsUniforms);
             neededUniforms.putAll(fsUniforms);
 
-            for (Map.Entry<String, Class> uniformEntry : neededUniforms.entrySet()) {
+            for (Map.Entry<String, Class> uniformEntry : neededUniforms
+                    .entrySet()) {
                 boolean thisEntryAvailable = false;
                 if (uniformFloatMatrices.containsKey(uniformEntry.getKey())) {
                     thisEntryAvailable = true;
                 } else if (uniformFloats.containsKey(uniformEntry.getKey())) {
                     thisEntryAvailable = true;
-                } else if (uniformFloatVectors.containsKey(uniformEntry.getKey())) {
+                } else if (uniformFloatVectors.containsKey(uniformEntry
+                        .getKey())) {
                     thisEntryAvailable = true;
                 } else if (uniformInts.containsKey(uniformEntry.getKey())) {
+                    thisEntryAvailable = true;
+                } else if (uniformBooleans.containsKey(uniformEntry.getKey())) {
                     thisEntryAvailable = true;
                 }
 
                 if (!thisEntryAvailable) {
                     allPresent = false;
-                    System.err.println("SHADER WARNING: " + fs.getName() + " uniform variable " + uniformEntry.getKey()
+                    System.err.println("SHADER WARNING: " + fs.getName()
+                            + " uniform variable " + uniformEntry.getKey()
                             + " not present at use.");
                 }
             }
@@ -169,7 +183,8 @@ public class Program {
 
                 if (!thisEntryAvailable) {
                     allPresent = false;
-                    System.err.println("SHADER WARNING: " + vs.getName() + " input variable " + inEntry.getKey()
+                    System.err.println("SHADER WARNING: " + vs.getName()
+                            + " input variable " + inEntry.getKey()
                             + " not present at use.");
                 }
             }
@@ -208,6 +223,9 @@ public class Program {
         for (Entry<String, FloatBuffer> var : uniformFloatVectors.entrySet()) {
             passUniformVec(gl, var.getKey(), var.getValue());
         }
+        for (Entry<String, Boolean> var : uniformBooleans.entrySet()) {
+            passUniform(gl, var.getKey(), var.getValue());
+        }
         for (Entry<String, Integer> var : uniformInts.entrySet()) {
             passUniform(gl, var.getKey(), var.getValue());
         }
@@ -222,7 +240,8 @@ public class Program {
         int nextStart = 0;
         for (GLSLAttrib attrib : attribs) {
             int ptr = gl.glGetAttribLocation(pointer, attrib.name);
-            gl.glVertexAttribPointer(ptr, attrib.vectorSize, GL3.GL_FLOAT, false, 0, nextStart);
+            gl.glVertexAttribPointer(ptr, attrib.vectorSize, GL3.GL_FLOAT,
+                    false, 0, nextStart);
             gl.glEnableVertexAttribArray(ptr);
 
             nextStart += attrib.buffer.capacity() * Buffers.SIZEOF_FLOAT;
@@ -258,6 +277,13 @@ public class Program {
         uniformFloatMatrices.put(name, var.asBuffer());
     }
 
+    public void setUniform(String name, Boolean var) {
+        if (!uniformBooleans.containsKey(name)) {
+            warningsGiven = false;
+        }
+        uniformBooleans.put(name, var);
+    }
+
     public void setUniform(String name, Integer var) {
         if (!uniformInts.containsKey(name)) {
             warningsGiven = false;
@@ -272,7 +298,8 @@ public class Program {
         uniformFloats.put(name, var);
     }
 
-    public void passUniformVec(GL3 gl, String pointerNameInShader, FloatBuffer var) {
+    public void passUniformVec(GL3 gl, String pointerNameInShader,
+            FloatBuffer var) {
         int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
 
         int vecSize = var.capacity();
@@ -287,7 +314,8 @@ public class Program {
         }
     }
 
-    public void passUniformMat(GL3 gl, String pointerNameInShader, FloatBuffer var) {
+    public void passUniformMat(GL3 gl, String pointerNameInShader,
+            FloatBuffer var) {
         int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
 
         int matSize = var.capacity();
@@ -298,6 +326,15 @@ public class Program {
         } else if (matSize == 16) {
             gl.glUniformMatrix4fv(ptr, 1, true, var);
         }
+    }
+
+    private void passUniform(GL3 gl, String pointerNameInShader, boolean var) {
+        int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
+        int passable = 0;
+        if (var == true) {
+            passable = 1;
+        }
+        gl.glUniform1i(ptr, passable);
     }
 
     private void passUniform(GL3 gl, String pointerNameInShader, int var) {

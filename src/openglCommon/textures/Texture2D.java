@@ -12,10 +12,10 @@ import com.jogamp.common.nio.Buffers;
 public class Texture2D extends Texture {
 
     protected ByteBuffer pixelBuffer;
-    protected int width, height;
-    protected IntBuffer pointer;
+    protected int        width, height;
+    protected IntBuffer  pointer;
 
-    protected boolean initialized = false;
+    protected boolean    initialized = false;
 
     public Texture2D(int glMultitexUnit) {
         super(glMultitexUnit);
@@ -40,10 +40,14 @@ public class Texture2D extends Texture {
             gl.glBindTexture(GL3.GL_TEXTURE_2D, pointer.get(0));
 
             // Wrap.
-            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
-            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
-            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S,
+                    GL3.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T,
+                    GL3.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER,
+                    GL3.GL_LINEAR);
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER,
+                    GL3.GL_LINEAR);
 
             // Specifies the alignment requirements for the start of each pixel
             // row in memory.
@@ -88,6 +92,14 @@ public class Texture2D extends Texture {
 
     public int getHeight() {
         return height;
+    }
+
+    public Texture2D copy(GL3 gl, int glMultitexUnit) {
+        Texture2D result = new Texture2D(glMultitexUnit);
+        result.pixelBuffer = pixelBuffer.duplicate();
+        result.init(gl);
+
+        return result;
     }
 
     public int getPointer() throws UninitializedException {
