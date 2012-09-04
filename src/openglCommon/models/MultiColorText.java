@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import javax.media.opengl.GL3;
 
 import openglCommon.datastructures.GLSLAttrib;
-import openglCommon.datastructures.HDRFBO;
 import openglCommon.datastructures.Material;
 import openglCommon.datastructures.VBO;
 import openglCommon.exceptions.UninitializedException;
@@ -21,7 +20,6 @@ import openglCommon.math.VecF2;
 import openglCommon.math.VecF3;
 import openglCommon.math.VecF4;
 import openglCommon.math.VectorFMath;
-import openglCommon.models.base.RBOQuad;
 import openglCommon.shaders.Program;
 import openglCommon.text.GlyphShape;
 import openglCommon.text.OutlineShape;
@@ -42,12 +40,17 @@ public class MultiColorText extends Model {
     private final BoundingBox                  bbox;
     private FloatBuffer                        tCoords;
 
-    private HDRFBO                             fbo;
-    private RBOQuad                            quad;
+    // private HDRFBO fbo;
+    // private RBOQuad quad;
     private String                             cachedString;
+    private final TypecastFont                 font;
+    private final int                          fontSize;
 
-    public MultiColorText(Material material) {
+    public MultiColorText(Material material, TypecastFont font, int fontSize) {
         super(material, vertex_format.TRIANGLES);
+
+        this.font = font;
+        this.fontSize = fontSize;
 
         cachedString = "";
 
@@ -80,8 +83,7 @@ public class MultiColorText extends Model {
         initialized = true;
     }
 
-    public void setString(GL3 gl, Program program, TypecastFont font,
-            String str, Color4 basicColor, int fontSize) {
+    public void setString(GL3 gl, String str, Color4 basicColor) {
         if (cachedString.compareTo(str) != 0) {
             colors.clear();
             glyphs.clear();
@@ -173,25 +175,25 @@ public class MultiColorText extends Model {
         this.numVertices = vertices.size();
 
         // Prepare the FBO for 2 pass rendering
-        int textureWidth = 1024;
-        int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox
-                .getWidth()) + 0.5f);
-
-        if (fbo != null) {
-            fbo.delete(gl);
-        }
-        fbo = new HDRFBO(textureWidth, textureHeight, GL3.GL_TEXTURE0);
-        fbo.init(gl);
+        // int textureWidth = 1024;
+        // int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox
+        // .getWidth()) + 0.5f);
+        //
+        // if (fbo != null) {
+        // fbo.delete(gl);
+        // }
+        // fbo = new HDRFBO(textureWidth, textureHeight, GL3.GL_TEXTURE0);
+        // fbo.init(gl);
 
         // Prepare the quad, to be rendered with texture in case of 2
         // pass
         // rendering
-        if (quad != null) {
-            quad.delete(gl);
-        }
-        quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(),
-                bbox.getCenter());
-        quad.init(gl);
+        // if (quad != null) {
+        // quad.delete(gl);
+        // }
+        // quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(),
+        // bbox.getCenter());
+        // quad.init(gl);
 
         initialized = true;
     }
@@ -244,52 +246,52 @@ public class MultiColorText extends Model {
         makeVBO(gl);
     }
 
-    private void render2FBO(GL3 gl, Program program)
-            throws UninitializedException {
-        MatF4 PMVMatrix = new MatF4();
-
-        fbo.bind(gl);
-        gl.glClear(GL3.GL_DEPTH_BUFFER_BIT | GL3.GL_COLOR_BUFFER_BIT);
-        try {
-            int minX = (int) Math.floor(bbox.getMin().get(0));
-            int minY = (int) Math.floor(bbox.getMin().get(1));
-            int maxX = (int) Math.ceil(bbox.getMax().get(0));
-            int maxY = (int) Math.ceil(bbox.getMax().get(1));
-
-            PMVMatrix = MatrixFMath.ortho(minX, maxX, minY, maxY, -1f, 1f);
-        } catch (UninitializedException e1) {
-            e1.printStackTrace();
-        }
-
-        program.setUniformMatrix("PMVMatrix", PMVMatrix);
-
-        try {
-            program.use(gl);
-        } catch (UninitializedException e) {
-            e.printStackTrace();
-        }
-
-        vbo.bind(gl);
-
-        program.linkAttribs(gl, vbo.getAttribs());
-
-        gl.glDrawArrays(GL3.GL_TRIANGLES, 0, numVertices);
-
-        fbo.unBind(gl);
-    }
-
-    private void renderFBO(GL3 gl, Program program, MatF4 PMVMatrix) {
-        try {
-            fbo.getTexture().use(gl);
-        } catch (UninitializedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        program.setUniform("RBOTexture", fbo.getTexture().getGLMultiTexUnit());
-
-        quad.draw(gl, program, PMVMatrix);
-    }
+    // private void render2FBO(GL3 gl, Program program)
+    // throws UninitializedException {
+    // MatF4 PMVMatrix = new MatF4();
+    //
+    // fbo.bind(gl);
+    // gl.glClear(GL3.GL_DEPTH_BUFFER_BIT | GL3.GL_COLOR_BUFFER_BIT);
+    // try {
+    // int minX = (int) Math.floor(bbox.getMin().get(0));
+    // int minY = (int) Math.floor(bbox.getMin().get(1));
+    // int maxX = (int) Math.ceil(bbox.getMax().get(0));
+    // int maxY = (int) Math.ceil(bbox.getMax().get(1));
+    //
+    // PMVMatrix = MatrixFMath.ortho(minX, maxX, minY, maxY, -1f, 1f);
+    // } catch (UninitializedException e1) {
+    // e1.printStackTrace();
+    // }
+    //
+    // program.setUniformMatrix("PMVMatrix", PMVMatrix);
+    //
+    // try {
+    // program.use(gl);
+    // } catch (UninitializedException e) {
+    // e.printStackTrace();
+    // }
+    //
+    // vbo.bind(gl);
+    //
+    // program.linkAttribs(gl, vbo.getAttribs());
+    //
+    // gl.glDrawArrays(GL3.GL_TRIANGLES, 0, numVertices);
+    //
+    // fbo.unBind(gl);
+    // }
+    //
+    // private void renderFBO(GL3 gl, Program program, MatF4 PMVMatrix) {
+    // try {
+    // fbo.getTexture().use(gl);
+    // } catch (UninitializedException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
+    // program.setUniform("RBOTexture", fbo.getTexture().getGLMultiTexUnit());
+    //
+    // quad.draw(gl, program, PMVMatrix);
+    // }
 
     @Override
     public void draw(GL3 gl, Program program, MatF4 PMVMatrix) {
@@ -310,16 +312,16 @@ public class MultiColorText extends Model {
         }
     }
 
-    public void draw2pass(GL3 gl, Program program, MatF4 PMVMatrix) {
-        if (initialized) {
-            try {
-                render2FBO(gl, program);
-                renderFBO(gl, program, PMVMatrix);
-            } catch (UninitializedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    // public void draw2pass(GL3 gl, Program program, MatF4 PMVMatrix) {
+    // if (initialized) {
+    // try {
+    // render2FBO(gl, program);
+    // renderFBO(gl, program, PMVMatrix);
+    // } catch (UninitializedException e) {
+    // e.printStackTrace();
+    // }
+    // }
+    // }
 
     @Override
     public String toString() {
