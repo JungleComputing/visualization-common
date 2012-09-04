@@ -17,17 +17,17 @@ public class InputHandler implements MouseListener, MouseMotionListener, MouseWh
         PPP, PPN, PNP, PNN, NPP, NPN, NNP, NNN
     }
 
-    private VecF3   rotation;
-    private float   viewDist            = -150f;
+    protected VecF3 rotation;
+    protected float viewDist = -150f;
 
-    private float   rotationXorigin     = 0;
-    private float   rotationX;
+    protected float rotationXorigin = 0;
+    protected float rotationX;
 
-    private float   rotationYorigin     = 0;
-    private float   rotationY;
+    protected float rotationYorigin = 0;
+    protected float rotationY;
 
-    private float   dragLeftXorigin;
-    private float   dragLeftYorigin;
+    protected float dragLeftXorigin;
+    protected float dragLeftYorigin;
 
     private octants current_view_octant = octants.PPP;
 
