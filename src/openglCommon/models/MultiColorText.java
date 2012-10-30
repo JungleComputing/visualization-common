@@ -44,13 +44,12 @@ public class MultiColorText extends Model {
     // private RBOQuad quad;
     private String                             cachedString;
     private final TypecastFont                 font;
-    private final int                          fontSize;
+    private int                                cachedSize;
 
-    public MultiColorText(Material material, TypecastFont font, int fontSize) {
+    public MultiColorText(Material material, TypecastFont font) {
         super(material, vertex_format.TRIANGLES);
 
         this.font = font;
-        this.fontSize = fontSize;
 
         cachedString = "";
 
@@ -83,15 +82,15 @@ public class MultiColorText extends Model {
         initialized = true;
     }
 
-    public void setString(GL3 gl, String str, Color4 basicColor) {
-        if (cachedString.compareTo(str) != 0) {
+    public void setString(GL3 gl, String str, Color4 basicColor, int size) {
+        if (cachedString.compareTo(str) != 0 || cachedSize != size) {
             colors.clear();
             glyphs.clear();
 
-            if (str.compareTo(cachedString) != 0) {
+            if (str.compareTo(cachedString) != 0 || cachedSize != size) {
                 // Get the outline shapes for the current string in this font
                 ArrayList<OutlineShape> shapes = font.getOutlineShapes(str,
-                        fontSize, SVertex.factory());
+                        size, SVertex.factory());
 
                 // Make a set of glyph shapes from the outlines
                 int numGlyps = shapes.size();
@@ -116,6 +115,7 @@ public class MultiColorText extends Model {
 
                 makeVBO(gl);
                 this.cachedString = str;
+                this.cachedSize = size;
             }
         }
     }

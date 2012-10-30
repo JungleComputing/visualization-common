@@ -1,6 +1,5 @@
 package openglCommon.datastructures;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import javax.media.opengl.GL;
@@ -11,12 +10,12 @@ import openglCommon.textures.RBOTexture;
 import openglCommon.textures.Texture2D;
 
 public class FBO {
-    private final IntBuffer fboPointer;
-    private final IntBuffer rboPointer;
+    private final IntBuffer  fboPointer;
+    private final IntBuffer  rboPointer;
     private final RBOTexture rboTexture;
 
-    private final int width, height;
-    private boolean initialized = false;
+    private final int        width, height;
+    private boolean          initialized = false;
 
     public FBO(int width, int height, int glMultitexUnit) {
         this.width = width;
@@ -39,20 +38,24 @@ public class FBO {
             // Setup texture and color buffer
             rboTexture.init(gl);
             rboTexture.use(gl);
-            gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D,
+            gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER,
+                    GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D,
                     rboTexture.getPointer(), 0);
             rboTexture.unBind(gl);
 
             // Setup the depth buffer
             gl.glGenRenderbuffers(1, rboPointer);
             gl.glBindRenderbuffer(GL3.GL_RENDERBUFFER, rboPointer.get(0));
-            gl.glRenderbufferStorage(GL.GL_RENDERBUFFER, GL3.GL_DEPTH_COMPONENT16, width, height);
+            gl.glRenderbufferStorage(GL.GL_RENDERBUFFER,
+                    GL3.GL_DEPTH_COMPONENT16, width, height);
             gl.glBindRenderbuffer(GL3.GL_RENDERBUFFER, 0);
 
             // Attach both buffers to the frame buffer
-            gl.glFramebufferTexture2D(GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0, GL.GL_TEXTURE_2D,
+            gl.glFramebufferTexture2D(GL.GL_FRAMEBUFFER,
+                    GL.GL_COLOR_ATTACHMENT0, GL.GL_TEXTURE_2D,
                     rboTexture.getPointer(), 0);
-            gl.glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER, GL.GL_DEPTH_ATTACHMENT, GL.GL_RENDERBUFFER,
+            gl.glFramebufferRenderbuffer(GL.GL_FRAMEBUFFER,
+                    GL.GL_DEPTH_ATTACHMENT, GL.GL_RENDERBUFFER,
                     rboPointer.get(0));
 
             checkNoError(gl, "POST: ", false);
@@ -68,13 +71,15 @@ public class FBO {
         initialized = true;
     }
 
-    private boolean checkNoError(GL gl, String exceptionMessage, boolean quietlyRemoveAllPreviousErrors) {
+    private boolean checkNoError(GL gl, String exceptionMessage,
+            boolean quietlyRemoveAllPreviousErrors) {
         int error = gl.glGetError();
         if (!quietlyRemoveAllPreviousErrors) {
             if (GL.GL_NO_ERROR != error) {
                 System.err.println("GL ERROR(s) " + exceptionMessage + " : ");
                 while (GL.GL_NO_ERROR != error) {
-                    System.err.println(" GL Error 0x" + Integer.toHexString(error));
+                    System.err.println(" GL Error 0x"
+                            + Integer.toHexString(error));
                     error = gl.glGetError();
                 }
                 return false;
@@ -124,22 +129,6 @@ public class FBO {
 
     public Texture2D getTexture() {
         return rboTexture;
-    }
-
-    public ByteBuffer getPixels(GL3 gl) {
-        ByteBuffer buf = ByteBuffer.allocate(width * height * 3);
-        try {
-            rboTexture.use(gl);
-            gl.glGetTexImage(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGB, GL3.GL_UNSIGNED_BYTE, buf);
-        } catch (UninitializedException e) {
-            e.printStackTrace();
-        }
-
-        // gl.glReadBuffer(GL3.GL_COLOR_ATTACHMENT0);
-        // gl.glPixelStorei(GL3.GL_PACK_ALIGNMENT, 1);
-        // gl.glReadPixels(0, 0, width, height, GL3.GL_RGB,
-        // GL3.GL_UNSIGNED_BYTE, buf);
-        return buf;
     }
 
     public void unBind(GL3 gl) {

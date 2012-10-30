@@ -9,15 +9,15 @@ import openglCommon.math.VecF4;
 import openglCommon.math.VectorFMath;
 import openglCommon.util.Settings;
 
-public class GeoSphere extends Model {
+public class GeoSphereCut extends Model {
     Settings        settings      = Settings.getInstance();
 
     private boolean texCoordsIn3D = false;
 
     private final int latRibs, lonRibs;
 
-    public GeoSphere(Material material, int latRibs, int lonRibs, float radius,
-            boolean texCoordsIn3D) {
+    public GeoSphereCut(Material material, int latRibs, int lonRibs,
+            float radius, boolean texCoordsIn3D) {
         super(material, vertex_format.TRIANGLES);
         this.texCoordsIn3D = texCoordsIn3D;
         this.latRibs = latRibs;
@@ -27,7 +27,8 @@ public class GeoSphere extends Model {
         List<VecF3> normals3List = new ArrayList<VecF3>();
         List<VecF3> tCoords3List = new ArrayList<VecF3>();
 
-        makeVertices(points4List, normals3List, tCoords3List, radius);
+        makeVertices(points4List, normals3List, tCoords3List, radius,
+                (radius * 0.75f));
 
         numVertices = points4List.size();
 
@@ -37,17 +38,22 @@ public class GeoSphere extends Model {
     }
 
     private void makeVertices(List<VecF4> pointsList, List<VecF3> normalsList,
-            List<VecF3> tCoords3List, float radius) {
+            List<VecF3> tCoords3List, float fullRadius, float cutRadius) {
         float lonAngle = (float) ((2 * Math.PI) / lonRibs);
         float latAngle = (float) ((Math.PI) / latRibs);
+
         for (int lon = 0; lon < lonRibs; lon++) {
+            float flon = lon;
+            float flonribs = lonRibs;
+
             float startLonAngle = lonAngle * lon;
             float stopLonAngle = lonAngle * (lon + 1);
 
+            float radius = fullRadius - (flon / flonribs)
+                    * (fullRadius - cutRadius);
+
             for (int lat = 0; lat < latRibs; lat++) {
-                float flon = lon;
                 float flat = lat;
-                float flonribs = lonRibs;
                 float flatribs = latRibs;
 
                 float startLatAngle = latAngle * lat;

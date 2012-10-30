@@ -14,30 +14,40 @@ public class RBOTexture extends Texture2D {
 
     @Override
     public void init(GL3 gl) {
-        gl.glActiveTexture(glMultiTexUnit);
-        gl.glEnable(GL3.GL_TEXTURE_2D);
+        if (!initialized) {
+            // Tell OpenGL we want to use textures
+            gl.glEnable(GL3.GL_TEXTURE_2D);
+            gl.glActiveTexture(this.glMultiTexUnit);
 
-        // Create new texture pointer and bind it so we can manipulate it.
-        pointer = Buffers.newDirectIntBuffer(1);
-        gl.glGenTextures(1, pointer);
-        gl.glBindTexture(GL3.GL_TEXTURE_2D, pointer.get(0));
+            // Create a Texture Object
+            pointer = Buffers.newDirectIntBuffer(1);
+            gl.glGenTextures(1, pointer);
 
-        // Wrap and mipmap parameters.
-        gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
-        gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-        gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
-        gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
+            // Tell OpenGL that this texture is 2D and we want to use it
+            gl.glBindTexture(GL3.GL_TEXTURE_2D, pointer.get(0));
 
-        gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, // Mipmap level.
-                GL3.GL_RGBA8, // GL.GL_RGBA, // Internal Texel Format,
-                width, height, 0, // Border
-                GL3.GL_BGRA, // External format from image,
-                GL3.GL_UNSIGNED_BYTE, null // Imagedata as ByteBuffer
-        );
+            // Wrap.
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S,
+                    GL3.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T,
+                    GL3.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER,
+                    GL3.GL_LINEAR);
+            gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER,
+                    GL3.GL_LINEAR);
 
-        // Unbind, now ready for use
-        gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
+            // Specifies the alignment requirements for the start of each pixel
+            // row in memory.
+            gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
 
-        initialized = true;
+            gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, // Mipmap level.
+                    4, // GL.GL_RGBA, // Internal Texel Format,
+                    width, height, 0, // Border
+                    GL3.GL_RGBA, // External format from image,
+                    GL3.GL_UNSIGNED_BYTE, null // Imagedata as ByteBuffer
+            );
+
+            initialized = true;
+        }
     }
 }

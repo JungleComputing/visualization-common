@@ -27,16 +27,16 @@ import com.jogamp.graph.geom.Vertex;
 import com.jogamp.graph.geom.opengl.SVertex;
 
 public class Text extends Model {
-    private boolean initialized = false;
+    private boolean           initialized  = false;
 
-    private String cachedString = "";
+    private String            cachedString = "";
 
     private final BoundingBox bbox;
-    private FloatBuffer tCoords;
+    private FloatBuffer       tCoords;
 
-    private FBO fbo;
+    private FBO               fbo;
 
-    private RBOQuad quad;
+    private RBOQuad           quad;
 
     public Text(Material material) {
         super(material, vertex_format.TRIANGLES);
@@ -54,10 +54,12 @@ public class Text extends Model {
         this.tCoords = VectorFMath.toBuffer(texCoords);
     }
 
-    public void setString(GL3 gl, Program program, TypecastFont font, String str, boolean[] mask, int fontSize) {
+    public void setString(GL3 gl, Program program, TypecastFont font,
+            String str, boolean[] mask, int fontSize) {
         if (str.compareTo(cachedString) != 0) {
             // Get the outline shapes for the current string in this font
-            ArrayList<OutlineShape> shapes = font.getOutlineShapes(str, fontSize, SVertex.factory());
+            ArrayList<OutlineShape> shapes = font.getOutlineShapes(str,
+                    fontSize, SVertex.factory());
 
             // Make a set of glyph shapes from the outlines
             int numGlyps = shapes.size();
@@ -68,7 +70,8 @@ public class Text extends Model {
                     if (shapes.get(index) == null) {
                         continue;
                     }
-                    GlyphShape glyphShape = new GlyphShape(SVertex.factory(), shapes.get(index));
+                    GlyphShape glyphShape = new GlyphShape(SVertex.factory(),
+                            shapes.get(index));
 
                     if (glyphShape.getNumVertices() < 3) {
                         continue;
@@ -100,7 +103,8 @@ public class Text extends Model {
                 bbox.resize(vec);
 
                 myVertices[i] = new VecF4(vec, 1f);
-                myTexCoords[i] = new VecF2(v.getTexCoord()[0], v.getTexCoord()[1]);
+                myTexCoords[i] = new VecF2(v.getTexCoord()[0],
+                        v.getTexCoord()[1]);
 
                 i++;
             }
@@ -108,8 +112,10 @@ public class Text extends Model {
             vbo.delete(gl);
             this.vertices = VectorFMath.toBuffer(myVertices);
             this.tCoords = VectorFMath.toBuffer(myTexCoords);
-            GLSLAttrib vAttrib = new GLSLAttrib(this.vertices, "MCvertex", GLSLAttrib.SIZE_FLOAT, 4);
-            GLSLAttrib tAttrib = new GLSLAttrib(tCoords, "MCtexCoord", GLSLAttrib.SIZE_FLOAT, 2);
+            GLSLAttrib vAttrib = new GLSLAttrib(this.vertices, "MCvertex",
+                    GLSLAttrib.SIZE_FLOAT, 4);
+            GLSLAttrib tAttrib = new GLSLAttrib(tCoords, "MCtexCoord",
+                    GLSLAttrib.SIZE_FLOAT, 2);
             vbo = new VBO(gl, vAttrib, tAttrib);
 
             program.setUniformVector("ColorStatic", material.getColor());
@@ -120,7 +126,8 @@ public class Text extends Model {
 
             // Prepare the FBO for 2 pass rendering
             int textureWidth = 1024;
-            int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox.getWidth()) + 0.5f);
+            int textureHeight = (int) (((textureWidth * bbox.getHeight()) / bbox
+                    .getWidth()) + 0.5f);
             fbo = new FBO(textureWidth, textureHeight, GL3.GL_TEXTURE6);
             fbo.init(gl);
 
@@ -130,58 +137,61 @@ public class Text extends Model {
                 quad.delete(gl);
             }
 
-            quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(), bbox.getCenter());
+            quad = new RBOQuad(material, bbox.getWidth(), bbox.getHeight(),
+                    bbox.getCenter());
             quad.init(gl);
 
             initialized = true;
         }
     }
 
-    private void render2FBO(GL3 gl, Program program) throws UninitializedException {
-        MatF4 PMVMatrix = new MatF4();
+    // private void render2FBO(GL3 gl, Program program)
+    // throws UninitializedException {
+    // MatF4 PMVMatrix = new MatF4();
+    //
+    // fbo.bind(gl);
+    // gl.glClear(GL3.GL_DEPTH_BUFFER_BIT | GL3.GL_COLOR_BUFFER_BIT);
+    // try {
+    // int minX = (int) Math.floor(bbox.getMin().get(0));
+    // int minY = (int) Math.floor(bbox.getMin().get(1));
+    // int maxX = (int) Math.ceil(bbox.getMax().get(0));
+    // int maxY = (int) Math.ceil(bbox.getMax().get(1));
+    //
+    // PMVMatrix = MatrixFMath.ortho(minX, maxX, minY, maxY, -1f, 1f);
+    // } catch (UninitializedException e1) {
+    // e1.printStackTrace();
+    // }
+    //
+    // program.setUniformMatrix("PMVMatrix", PMVMatrix);
+    //
+    // try {
+    // program.use(gl);
+    // } catch (UninitializedException e) {
+    // e.printStackTrace();
+    // }
+    //
+    // vbo.bind(gl);
+    //
+    // program.linkAttribs(gl, vbo.getAttribs());
+    //
+    // gl.glDrawArrays(GL3.GL_TRIANGLES, 0, numVertices);
+    //
+    // fbo.unBind(gl);
+    // }
 
-        fbo.bind(gl);
-        gl.glClear(GL3.GL_DEPTH_BUFFER_BIT | GL3.GL_COLOR_BUFFER_BIT);
-        try {
-            int minX = (int) Math.floor(bbox.getMin().get(0));
-            int minY = (int) Math.floor(bbox.getMin().get(1));
-            int maxX = (int) Math.ceil(bbox.getMax().get(0));
-            int maxY = (int) Math.ceil(bbox.getMax().get(1));
-
-            PMVMatrix = MatrixFMath.ortho(minX, maxX, minY, maxY, -1f, 1f);
-        } catch (UninitializedException e1) {
-            e1.printStackTrace();
-        }
-
-        program.setUniformMatrix("PMVMatrix", PMVMatrix);
-
-        try {
-            program.use(gl);
-        } catch (UninitializedException e) {
-            e.printStackTrace();
-        }
-
-        vbo.bind(gl);
-
-        program.linkAttribs(gl, vbo.getAttribs());
-
-        gl.glDrawArrays(GL3.GL_TRIANGLES, 0, numVertices);
-
-        fbo.unBind(gl);
-    }
-
-    private void renderFBO(GL3 gl, Program program, MatF4 PMVMatrix) {
-        try {
-            fbo.getTexture().use(gl);
-        } catch (UninitializedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        program.setUniform("RBOTexture", fbo.getTexture().getGLMultiTexUnit());
-
-        quad.draw(gl, program, PMVMatrix);
-    }
+    //
+    // private void renderFBO(GL3 gl, Program program, MatF4 PMVMatrix) {
+    // try {
+    // fbo.getTexture().use(gl);
+    // } catch (UninitializedException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
+    // program.setUniform("RBOTexture", fbo.getTexture().getGLMultiTexUnit());
+    //
+    // quad.draw(gl, program, PMVMatrix);
+    // }
 
     @Override
     public void draw(GL3 gl, Program program, MatF4 PMVMatrix) {
@@ -202,33 +212,38 @@ public class Text extends Model {
         }
     }
 
-    public void draw2pass(GL3 gl, Program program, MatF4 PMVMatrix) {
-        if (initialized) {
-            try {
-                render2FBO(gl, program);
-                renderFBO(gl, program, PMVMatrix);
-            } catch (UninitializedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    // public void draw2pass(GL3 gl, Program program, MatF4 PMVMatrix) {
+    // if (initialized) {
+    // try {
+    // render2FBO(gl, program);
+    // renderFBO(gl, program, PMVMatrix);
+    // } catch (UninitializedException e) {
+    // e.printStackTrace();
+    // }
+    // }
+    // }
 
     @Override
     public void init(GL3 gl) {
         if (!initialized) {
-            GLSLAttrib vAttrib = new GLSLAttrib(vertices, "MCvertex", GLSLAttrib.SIZE_FLOAT, 4);
-            GLSLAttrib tAttrib = new GLSLAttrib(tCoords, "MCtexCoord", GLSLAttrib.SIZE_FLOAT, 2);
+            GLSLAttrib vAttrib = new GLSLAttrib(vertices, "MCvertex",
+                    GLSLAttrib.SIZE_FLOAT, 4);
+            GLSLAttrib tAttrib = new GLSLAttrib(tCoords, "MCtexCoord",
+                    GLSLAttrib.SIZE_FLOAT, 2);
             vbo = new VBO(gl, vAttrib, tAttrib);
         }
         initialized = true;
     }
 
-    public static MatF4 getPMVForHUD(float canvasWidth, float canvasHeight, float RasterPosX, float RasterPosY) {
+    public static MatF4 getPMVForHUD(float canvasWidth, float canvasHeight,
+            float RasterPosX, float RasterPosY) {
 
         MatF4 mv = new MatF4();
-        mv = mv.mul(MatrixFMath.translate((RasterPosX / canvasWidth), (RasterPosY / canvasHeight), 0f));
+        mv = mv.mul(MatrixFMath.translate((RasterPosX / canvasWidth),
+                (RasterPosY / canvasHeight), 0f));
 
-        MatF4 PMatrix = MatrixFMath.ortho(0f, canvasWidth, 0f, canvasHeight, -1f, 1f);
+        MatF4 PMatrix = MatrixFMath.ortho(0f, canvasWidth, 0f, canvasHeight,
+                -1f, 1f);
         mv = mv.mul(PMatrix);
 
         return mv;

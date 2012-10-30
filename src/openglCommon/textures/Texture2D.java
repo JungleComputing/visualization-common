@@ -54,7 +54,7 @@ public class Texture2D extends Texture {
             gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
 
             gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, // Mipmap level.
-                    GL3.GL_RGBA, // GL.GL_RGBA, // Internal Texel Format,
+                    4, // GL.GL_RGBA, // Internal Texel Format,
                     width, height, 0, // Border
                     GL3.GL_RGBA, // External format from image,
                     GL3.GL_UNSIGNED_BYTE, pixelBuffer // Imagedata as ByteBuffer

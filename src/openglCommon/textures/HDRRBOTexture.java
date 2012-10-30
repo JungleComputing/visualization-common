@@ -35,7 +35,7 @@ public class HDRRBOTexture extends HDRTexture2D {
         gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, // Mipmap level.
                 GL3.GL_RGBA, // GL.GL_RGBA, // Internal Texel Format,
                 width, height, 0, // Border
-                GL3.GL_BGRA, // External format from image,
+                GL3.GL_RGBA, // External format from image,
                 GL3.GL_FLOAT, null // Imagedata as ByteBuffer
         );
 

@@ -17,8 +17,8 @@ import com.jogamp.opengl.util.FPSAnimator;
 public abstract class CommonPanel extends JPanel {
     protected static final long serialVersionUID = 4754345291079348455L;
 
-    protected GLCanvas glCanvas;
-    protected GLContext offScreenContext;
+    protected GLCanvas          glCanvas;
+    protected GLContext         offScreenContext;
 
     public CommonPanel(CommonWindow glWindow, InputHandler inputHandler) {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
