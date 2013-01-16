@@ -45,10 +45,10 @@ public abstract class RenderState {
         return (RenderState) gl.getContext().getAttachedObject(thisKey);
     }
 
-    protected final ShaderState st;
+    protected final ShaderState                      st;
     protected final Vertex.Factory<? extends Vertex> vertexFactory;
-    protected final PMVMatrix pmvMatrix;
-    protected final GLUniformData gcu_PMVMatrix;
+    protected final PMVMatrix                        pmvMatrix;
+    protected final GLUniformData                    gcu_PMVMatrix;
 
     protected RenderState(ShaderState st,
             Vertex.Factory<? extends Vertex> vertexFactory, PMVMatrix pmvMatrix) {
@@ -108,7 +108,7 @@ public abstract class RenderState {
         }
 
         sb.append("RenderState[");
-        st.toString(sb).append(Platform.getNewline());
+        st.toString(sb, true).append(Platform.getNewline());
         sb.append("]");
 
         return sb;

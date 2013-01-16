@@ -44,19 +44,19 @@ public class MyTextRenderer extends TextRenderer {
     protected boolean initShaderProgram(GL2ES2 gl) {
         final ShaderState st = rs.getShaderState();
 
-        ShaderCode rsVp = ShaderCode.create(gl, GL2ES2.GL_VERTEX_SHADER, 1,
+        ShaderCode rsVp = ShaderCode.create(gl, GL2ES2.GL_VERTEX_SHADER,
                 MyTextRenderer.class, "shader", "shader/bin",
-                "curverenderer01-gl2");
-        ShaderCode rsFp = ShaderCode.create(gl, GL2ES2.GL_FRAGMENT_SHADER, 1,
+                "curverenderer01-gl2", false);
+        ShaderCode rsFp = ShaderCode.create(gl, GL2ES2.GL_FRAGMENT_SHADER,
                 MyTextRenderer.class, "shader", "shader/bin",
-                "curverenderer01b-gl2");
+                "curverenderer01b-gl2", false);
 
         ShaderProgram sp = new ShaderProgram();
         sp.add(rsVp);
         sp.add(rsFp);
 
         sp.init(gl);
-        st.attachShaderProgram(gl, sp);
+        st.attachShaderProgram(gl, sp, false);
         st.bindAttribLocation(gl, AttributeNames.VERTEX_ATTR_IDX,
                 AttributeNames.VERTEX_ATTR_NAME);
         st.bindAttribLocation(gl, AttributeNames.TEXCOORD_ATTR_IDX,

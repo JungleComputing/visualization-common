@@ -9,7 +9,6 @@ import javax.media.opengl.GLProfile;
 
 import nl.esciencecenter.visualization.openglCommon.util.Settings;
 
-
 public class GLOffscreenContext {
     private GLContext offScreenContext;
 
@@ -28,12 +27,14 @@ public class GLOffscreenContext {
             offScreenCapabilities.setNumSamples(4);
             offScreenCapabilities.setAlphaBits(4);
 
-            GLPbuffer pbuffer = factory.createGLPbuffer(factory.getDefaultDevice(), offScreenCapabilities,
-                    new DefaultGLCapabilitiesChooser(), Settings.getInstance().getScreenshotScreenWidth(), Settings
-                            .getInstance().getScreenshotScreenHeight(), null);
+            GLPbuffer pbuffer = factory.createGLPbuffer(factory
+                    .getDefaultDevice(), offScreenCapabilities,
+                    new DefaultGLCapabilitiesChooser(), Settings.getInstance()
+                            .getScreenshotScreenWidth(), Settings.getInstance()
+                            .getScreenshotScreenHeight(), null);
 
             offScreenContext = pbuffer.createContext(null);
-            offScreenContext.setSynchronized(true);
+            // offScreenContext.setSynchronized(true);
 
             if (offScreenContext == null) {
                 System.err.println("PBuffer failed.");

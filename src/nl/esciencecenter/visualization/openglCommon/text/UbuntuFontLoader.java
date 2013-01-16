@@ -29,7 +29,7 @@ package nl.esciencecenter.visualization.openglCommon.text;
  */
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URLConnection;
 
 import javax.media.opengl.GLException;
 
@@ -69,10 +69,12 @@ public class UbuntuFontLoader implements FontSet {
         return 0 != (bits & bit);
     }
 
+    @Override
     public Font getDefault() {
         return get(FAMILY_REGULAR, 0); // Sans Serif Regular
     }
 
+    @Override
     public Font get(int family, int style) {
         Font font = (Font) fontMap.get((family << 8) | style);
         if (font != null) {
@@ -80,55 +82,57 @@ public class UbuntuFontLoader implements FontSet {
         }
 
         switch (family) {
-            case FAMILY_MONOSPACED:
-            case FAMILY_CONDENSED:
-            case FAMILY_REGULAR:
-                if (is(style, STYLE_BOLD)) {
-                    if (is(style, STYLE_ITALIC)) {
-                        font = abspath(availableFontFileNames[3], family, style);
-                    } else {
-                        font = abspath(availableFontFileNames[2], family, style);
-                    }
-                } else if (is(style, STYLE_ITALIC)) {
-                    font = abspath(availableFontFileNames[1], family, style);
-                } else {
-                    font = abspath(availableFontFileNames[0], family, style);
-                }
-                break;
-
-            case FAMILY_LIGHT:
+        case FAMILY_MONOSPACED:
+        case FAMILY_CONDENSED:
+        case FAMILY_REGULAR:
+            if (is(style, STYLE_BOLD)) {
                 if (is(style, STYLE_ITALIC)) {
-                    font = abspath(availableFontFileNames[5], family, style);
+                    font = abspath(availableFontFileNames[3], family, style);
                 } else {
-                    font = abspath(availableFontFileNames[4], family, style);
+                    font = abspath(availableFontFileNames[2], family, style);
                 }
-                break;
+            } else if (is(style, STYLE_ITALIC)) {
+                font = abspath(availableFontFileNames[1], family, style);
+            } else {
+                font = abspath(availableFontFileNames[0], family, style);
+            }
+            break;
 
-            case FAMILY_MEDIUM:
-                if (is(style, STYLE_ITALIC)) {
-                    font = abspath(availableFontFileNames[6], family, style);
-                } else {
-                    font = abspath(availableFontFileNames[7], family, style);
-                }
-                break;
+        case FAMILY_LIGHT:
+            if (is(style, STYLE_ITALIC)) {
+                font = abspath(availableFontFileNames[5], family, style);
+            } else {
+                font = abspath(availableFontFileNames[4], family, style);
+            }
+            break;
+
+        case FAMILY_MEDIUM:
+            if (is(style, STYLE_ITALIC)) {
+                font = abspath(availableFontFileNames[6], family, style);
+            } else {
+                font = abspath(availableFontFileNames[7], family, style);
+            }
+            break;
         }
 
         return font;
     }
 
     Font abspath(String fname, int family, int style) {
-        final String err = "Problem loading font " + fname + ", stream " + relPath + fname;
+        final String err = "Problem loading font " + fname + ", stream "
+                + relPath + fname;
         try {
-            URL url = IOUtil.getResource(UbuntuFontLoader.class, relPath + fname);
-            if (null == url) {
+            URLConnection urlc = IOUtil.getResource(UbuntuFontLoader.class,
+                    relPath + fname);
+            if (null == urlc) {
                 throw new GLException(err);
             }
-            final Font f = FontFactory.get(url);
+            final Font f = FontFactory.get(urlc);
             if (null != f) {
                 fontMap.put((family << 8) | style, f);
                 return f;
             }
-            throw new GLException(err + " " + url);
+            throw new GLException(err + " " + urlc);
         } catch (IOException ioe) {
             throw new GLException(err, ioe);
         }

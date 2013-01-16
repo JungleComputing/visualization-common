@@ -30,11 +30,11 @@ package nl.esciencecenter.visualization.openglCommon.text;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URLConnection;
 
 public class FontFactory {
     /** Ubuntu is the default font family */
-    public static final int UBUNTU = 0;
+    public static final int                      UBUNTU     = 0;
 
     private static final TypecastFontConstructor fontConstr = new TypecastFontConstructor();
 
@@ -66,7 +66,7 @@ public class FontFactory {
         return fontConstr.create(file);
     }
 
-    public static final Font get(final URL url) throws IOException {
+    public static final Font get(final URLConnection url) throws IOException {
         return fontConstr.create(url);
     }
 

@@ -30,7 +30,7 @@ package nl.esciencecenter.visualization.openglCommon.text;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URLConnection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -43,6 +43,7 @@ import com.jogamp.common.util.IOUtil;
 public class TypecastFontConstructor {
     public Font create(final File ffile) throws IOException {
         return AccessController.doPrivileged(new PrivilegedAction<Font>() {
+            @Override
             public Font run() {
                 OTFontCollection fontset;
                 try {
@@ -56,15 +57,16 @@ public class TypecastFontConstructor {
         });
     }
 
-    public Font create(final URL furl) throws IOException {
+    public Font create(final URLConnection furl) throws IOException {
         return AccessController.doPrivileged(new PrivilegedAction<Font>() {
+            @Override
             public Font run() {
                 File tf = null;
                 int len = 0;
                 Font f = null;
                 try {
-                    tf = IOUtil.createTempFile("joglfont", ".ttf");
-                    len = IOUtil.copyURL2File(furl, tf);
+                    tf = IOUtil.createTempFile("joglfont", ".ttf", false, null);
+                    len = IOUtil.copyURLConn2File(furl, tf);
                     if (len == 0) {
                         tf.delete();
                         throw new GLException("Font of stream " + furl
