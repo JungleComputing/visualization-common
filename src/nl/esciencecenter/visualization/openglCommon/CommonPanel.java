@@ -12,7 +12,6 @@ import javax.swing.JPopupMenu;
 import nl.esciencecenter.visualization.openglCommon.util.GLProfileSelector;
 import nl.esciencecenter.visualization.openglCommon.util.InputHandler;
 
-
 import com.jogamp.opengl.util.FPSAnimator;
 
 public abstract class CommonPanel extends JPanel {
@@ -26,7 +25,7 @@ public abstract class CommonPanel extends JPanel {
         setLayout(new BorderLayout(0, 0));
 
         GLProfileSelector.printAvailable();
-        GLProfile glp = GLProfile.get(GLProfile.GL2ES2);
+        GLProfile glp = GLProfile.get(GLProfile.GL4);
 
         // Standard GL3 capabilities
         GLCapabilities glCapabilities = new GLCapabilities(glp);

@@ -11,7 +11,7 @@ public class VBO {
     private final IntBuffer vboPointer;
     private final IntBuffer bufferPointer;
 
-    private GLSLAttrib[] attribs;
+    private GLSLAttrib[]    attribs;
 
     public VBO(GL3 gl, GLSLAttrib... attribs) {
         this.attribs = attribs;
@@ -34,9 +34,9 @@ public class VBO {
 
         int nextStart = 0;
         for (final GLSLAttrib attrib : attribs) {
-            gl.glBufferSubData(GL3.GL_ARRAY_BUFFER, nextStart, attrib.buffer
-                    .capacity()
-                    * Buffers.SIZEOF_FLOAT, attrib.buffer);
+            gl.glBufferSubData(GL3.GL_ARRAY_BUFFER, nextStart,
+                    attrib.buffer.capacity() * Buffers.SIZEOF_FLOAT,
+                    attrib.buffer);
             nextStart += attrib.buffer.capacity() * Buffers.SIZEOF_FLOAT;
         }
     }
@@ -48,6 +48,7 @@ public class VBO {
     }
 
     public void delete(GL3 gl) {
+        gl.glBindVertexArray(0);
         gl.glDeleteVertexArrays(1, this.vboPointer);
         gl.glDeleteBuffers(1, this.bufferPointer);
     }
@@ -72,9 +73,9 @@ public class VBO {
 
         int nextStart = 0;
         for (final GLSLAttrib attrib : attribs) {
-            gl.glBufferSubData(GL3.GL_ARRAY_BUFFER, nextStart, attrib.buffer
-                    .capacity()
-                    * Buffers.SIZEOF_FLOAT, attrib.buffer);
+            gl.glBufferSubData(GL3.GL_ARRAY_BUFFER, nextStart,
+                    attrib.buffer.capacity() * Buffers.SIZEOF_FLOAT,
+                    attrib.buffer);
             nextStart += attrib.buffer.capacity() * Buffers.SIZEOF_FLOAT;
         }
     }

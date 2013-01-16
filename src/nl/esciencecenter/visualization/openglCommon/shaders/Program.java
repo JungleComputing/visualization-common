@@ -14,7 +14,6 @@ import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedExce
 import nl.esciencecenter.visualization.openglCommon.math.MatrixF;
 import nl.esciencecenter.visualization.openglCommon.math.VectorF;
 
-
 import com.jogamp.common.nio.Buffers;
 
 public class Program {
@@ -315,6 +314,36 @@ public class Program {
         }
     }
 
+    public void passUniformVecArray(GL3 gl, String pointerNameInShader,
+            FloatBuffer var, int vecSize, int count) {
+        int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
+
+        if (vecSize == 1) {
+            gl.glUniform1fv(ptr, count, var);
+        } else if (vecSize == 2) {
+            gl.glUniform2fv(ptr, count, var);
+        } else if (vecSize == 3) {
+            gl.glUniform3fv(ptr, count, var);
+        } else if (vecSize == 4) {
+            gl.glUniform4fv(ptr, count, var);
+        }
+    }
+
+    public void passUniformVecArray(GL3 gl, String pointerNameInShader,
+            IntBuffer var, int vecSize, int count) {
+        int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
+
+        if (vecSize == 1) {
+            gl.glUniform1iv(ptr, count, var);
+        } else if (vecSize == 2) {
+            gl.glUniform2iv(ptr, count, var);
+        } else if (vecSize == 3) {
+            gl.glUniform3iv(ptr, count, var);
+        } else if (vecSize == 4) {
+            gl.glUniform4iv(ptr, count, var);
+        }
+    }
+
     public void passUniformMat(GL3 gl, String pointerNameInShader,
             FloatBuffer var) {
         int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
@@ -329,7 +358,7 @@ public class Program {
         }
     }
 
-    private void passUniform(GL3 gl, String pointerNameInShader, boolean var) {
+    public void passUniform(GL3 gl, String pointerNameInShader, boolean var) {
         int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
         int passable = 0;
         if (var == true) {
@@ -338,12 +367,12 @@ public class Program {
         gl.glUniform1i(ptr, passable);
     }
 
-    private void passUniform(GL3 gl, String pointerNameInShader, int var) {
+    public void passUniform(GL3 gl, String pointerNameInShader, int var) {
         int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
         gl.glUniform1i(ptr, var);
     }
 
-    private void passUniform(GL3 gl, String pointerNameInShader, float var) {
+    public void passUniform(GL3 gl, String pointerNameInShader, float var) {
         int ptr = gl.glGetUniformLocation(pointer, pointerNameInShader);
         gl.glUniform1f(ptr, var);
     }
