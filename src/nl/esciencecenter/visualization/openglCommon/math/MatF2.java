@@ -3,20 +3,20 @@ package nl.esciencecenter.visualization.openglCommon.math;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-public class MatF3 extends MatrixF {
-    public static final int SIZE = 9;
+public class MatF2 extends MatrixF {
+    public static int SIZE = 4;
 
     /**
      * Creates a new 3x3 identity matrix.
      */
-    public MatF3() {
+    public MatF2() {
         super(SIZE);
         identity();
     }
 
     private void identity() {
         Arrays.fill(m, 0f);
-        m[0] = m[4] = m[8] = 1.0f;
+        m[0] = m[3] = 1.0f;
     }
 
     /**
@@ -25,7 +25,7 @@ public class MatF3 extends MatrixF {
      * @param in
      *            The value to be put in all matrix fields.
      */
-    public MatF3(float in) {
+    public MatF2(float in) {
         super(SIZE);
         Arrays.fill(m, in);
     }
@@ -40,11 +40,10 @@ public class MatF3 extends MatrixF {
      * @param v2
      *            The third row of the matrix.
      */
-    public MatF3(VecF3 v0, VecF3 v1, VecF3 v2) {
+    public MatF2(VecF2 v0, VecF2 v1) {
         super(SIZE);
         buf.put(v0.asBuffer());
         buf.put(v1.asBuffer());
-        buf.put(v2.asBuffer());
     }
 
     /**
@@ -69,18 +68,12 @@ public class MatF3 extends MatrixF {
      * @param m22
      *            The parameter on position 2x2.
      */
-    public MatF3(float m00, float m01, float m02, float m10, float m11,
-            float m12, float m20, float m21, float m22) {
+    public MatF2(float m00, float m01, float m10, float m11) {
         super(SIZE);
         m[0] = m00;
         m[1] = m01;
-        m[2] = m02;
-        m[3] = m10;
-        m[4] = m11;
-        m[5] = m12;
-        m[6] = m20;
-        m[7] = m21;
-        m[8] = m22;
+        m[2] = m10;
+        m[3] = m11;
     }
 
     /**
@@ -89,7 +82,7 @@ public class MatF3 extends MatrixF {
      * @param n
      *            The old matrix to be copied.
      */
-    public MatF3(MatF3 n) {
+    public MatF2(MatF2 n) {
         super(SIZE);
 
         for (int i = 0; i < SIZE; i++) {
@@ -97,7 +90,7 @@ public class MatF3 extends MatrixF {
         }
     }
 
-    public MatF3(FloatBuffer src) {
+    public MatF2(FloatBuffer src) {
         super(SIZE);
 
         for (int i = 0; i < SIZE; i++) {
@@ -110,18 +103,15 @@ public class MatF3 extends MatrixF {
      * 
      * @param n
      *            The matrix to be multiplied with the current matrix.
-     * @return The new 4x4 matrix that is the result of the multiplication.
+     * @return The new 2x2 matrix that is the result of the multiplication.
      */
-    public MatF3 mul(MatF3 n) {
-        MatF3 a = new MatF3(0);
+    public MatF2 mul(MatF2 n) {
+        MatF2 a = new MatF2(0);
 
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    a.m[i * 3 + j] += m[i * 3 + k] * n.m[k * 3 + j];
-                }
-            }
-        }
+        a.m[0] = m[0] * n.m[0] + m[1] * n.m[2];
+        a.m[1] = m[0] * n.m[1] + m[1] * n.m[3];
+        a.m[2] = m[2] * n.m[0] + m[3] * n.m[2];
+        a.m[3] = m[2] * n.m[1] + m[3] * n.m[3];
 
         return a;
     }
@@ -133,11 +123,9 @@ public class MatF3 extends MatrixF {
      *            The vector to be multiplied with the current matrix.
      * @return The new 4x4 matrix that is the result of the multiplication.
      */
-    public VecF3 mul(VecF3 v) {
-        return new VecF3(m[0 * 3 + 0] * v.v[0] + m[0 * 3 + 1] * v.v[1]
-                + m[0 * 3 + 2] * v.v[2], m[1 * 3 + 0] * v.v[0] + m[1 * 3 + 1]
-                * v.v[1] + m[1 * 3 + 2] * v.v[2], m[2 * 3 + 0] * v.v[0]
-                + m[2 * 3 + 1] * v.v[1] + m[2 * 3 + 2] * v.v[2]);
+    public VecF2 mul(VecF2 v) {
+        return new VecF2(m[0] * v.v[0] + m[1] * v.v[1], m[2] * v.v[0] + m[3]
+                * v.v[1]);
     }
 
     /**
@@ -147,7 +135,7 @@ public class MatF3 extends MatrixF {
      *            The scalar to be multiplied with the current matrix.
      * @return The new 4x4 matrix that is the result of the multiplication.
      */
-    public MatF3 mul(Number n) {
+    public MatF2 mul(Number n) {
         float fn = n.floatValue();
         for (int i = 0; i < SIZE; ++i) {
             m[i] *= fn;
@@ -163,7 +151,7 @@ public class MatF3 extends MatrixF {
      *            The matrix to be added to the current matrix.
      * @return The new 4x4 matrix that is the result of the addition.
      */
-    public MatF3 add(MatF3 n) {
+    public MatF2 add(MatF2 n) {
         for (int i = 0; i < SIZE; ++i) {
             m[i] += n.m[i];
         }
@@ -178,7 +166,7 @@ public class MatF3 extends MatrixF {
      *            The matrix to be substracted from to the current matrix.
      * @return The new 4x4 matrix that is the result of the substraction.
      */
-    public MatF3 sub(MatF3 n) {
+    public MatF2 sub(MatF2 n) {
         for (int i = 0; i < SIZE; ++i) {
             m[i] -= n.m[i];
         }
@@ -195,7 +183,7 @@ public class MatF3 extends MatrixF {
      *            matrix.
      * @return The new 4x4 matrix that is the result of the division.
      */
-    public MatF3 div(Number n) {
+    public MatF2 div(Number n) {
         float fn = 1f / n.floatValue();
 
         for (int i = 0; i < SIZE; ++i) {
@@ -206,7 +194,7 @@ public class MatF3 extends MatrixF {
     }
 
     @Override
-    public MatF3 clone() {
-        return new MatF3(this);
+    public MatF2 clone() {
+        return new MatF2(this);
     }
 }
