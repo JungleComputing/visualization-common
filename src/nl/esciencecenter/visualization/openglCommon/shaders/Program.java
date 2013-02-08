@@ -13,10 +13,20 @@ import nl.esciencecenter.visualization.openglCommon.datastructures.GLSLAttrib;
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
 import nl.esciencecenter.visualization.openglCommon.math.MatrixF;
 import nl.esciencecenter.visualization.openglCommon.math.VectorF;
+import nl.esciencecenter.visualization.openglCommon.shaders.FragmentShader;
+import nl.esciencecenter.visualization.openglCommon.shaders.GeometryShader;
+import nl.esciencecenter.visualization.openglCommon.shaders.Shader;
+import nl.esciencecenter.visualization.openglCommon.shaders.VertexShader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jogamp.common.nio.Buffers;
 
 public class Program {
+    private final static Logger                logger           = LoggerFactory
+                                                                        .getLogger(Program.class);
+
     public int                                 pointer;
     private final VertexShader                 vs;
     private GeometryShader                     gs;
@@ -76,7 +86,7 @@ public class Program {
         IntBuffer buf = Buffers.newDirectIntBuffer(1);
         gl.glGetProgramiv(pointer, GL3.GL_LINK_STATUS, buf);
         if (buf.get(0) == 0) {
-            System.err.print("Link error");
+            logger.error("Link error");
             printError(gl);
         }
 
@@ -93,17 +103,17 @@ public class Program {
 
         boolean compatible = true;
 
-        if (!warningsGiven) {
+        if (!warningsGiven || logger.isDebugEnabled()) {
             for (Map.Entry<String, Class> outEntry : outs.entrySet()) {
                 if (!ins.containsKey(outEntry.getKey())) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + vs.getName()
+                    logger.warn("SHADER WARNING: " + vs.getName()
                             + " output variable " + outEntry.getKey()
                             + " has no matching input variable.");
                 } else if (!ins.get(outEntry.getKey()).equals(
                         outs.get(outEntry.getKey()))) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + vs.getName()
+                    logger.warn("SHADER WARNING: " + vs.getName()
                             + " Type of output variable " + outEntry.getKey()
                             + " does not match with type of input variable");
                 }
@@ -111,13 +121,13 @@ public class Program {
             for (Map.Entry<String, Class> inEntry : ins.entrySet()) {
                 if (!outs.containsKey(inEntry.getKey())) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + fs.getName()
+                    logger.warn("SHADER WARNING: " + fs.getName()
                             + " input variable " + inEntry.getKey()
                             + " has no matching output variable.");
                 } else if (!ins.get(inEntry.getKey()).equals(
                         outs.get(inEntry.getKey()))) {
                     compatible = false;
-                    System.err.println("SHADER WARNING: " + fs.getName()
+                    logger.warn("SHADER WARNING: " + fs.getName()
                             + " Type of input variable " + inEntry.getKey()
                             + " does not match with type of output variable");
                 }
@@ -134,7 +144,7 @@ public class Program {
 
         boolean allPresent = true;
 
-        if (!warningsGiven) {
+        if (!warningsGiven || logger.isDebugEnabled()) {
             HashMap<String, Class> neededUniforms = new HashMap<String, Class>();
             neededUniforms.putAll(vsUniforms);
             neededUniforms.putAll(fsUniforms);
@@ -157,7 +167,7 @@ public class Program {
 
                 if (!thisEntryAvailable) {
                     allPresent = false;
-                    System.err.println("SHADER WARNING: " + fs.getName()
+                    logger.warn("SHADER WARNING: " + fs.getName()
                             + " uniform variable " + uniformEntry.getKey()
                             + " not present at use.");
                 }
@@ -172,7 +182,7 @@ public class Program {
         HashMap<String, Class> vsIns = vs.getIns();
         boolean allPresent = true;
 
-        if (!warningsGiven) {
+        if (!warningsGiven || logger.isDebugEnabled()) {
             for (Map.Entry<String, Class> inEntry : vsIns.entrySet()) {
                 boolean thisEntryAvailable = false;
                 for (GLSLAttrib attr : attribs) {
@@ -183,7 +193,7 @@ public class Program {
 
                 if (!thisEntryAvailable) {
                     allPresent = false;
-                    System.err.println("SHADER WARNING: " + vs.getName()
+                    logger.warn("SHADER WARNING: " + vs.getName()
                             + " input variable " + inEntry.getKey()
                             + " not present at use.");
                 }
@@ -205,6 +215,14 @@ public class Program {
 
             gl.glDetachShader(pointer, fs.getShader());
             gl.glDeleteShader(fs.getShader());
+
+            // Check for errors
+            IntBuffer buf = Buffers.newDirectIntBuffer(1);
+            gl.glGetProgramiv(pointer, GL3.GL_LINK_STATUS, buf);
+            if (buf.get(0) == 0) {
+                logger.error("Link error");
+                printError(gl);
+            }
         } catch (UninitializedException e) {
             System.out.println("Shaders not initialized properly");
             System.exit(0);
@@ -234,6 +252,14 @@ public class Program {
         }
 
         checkUniforms(vs, fs);
+
+        // Check for errors
+        IntBuffer buf = Buffers.newDirectIntBuffer(1);
+        gl.glGetProgramiv(pointer, GL3.GL_LINK_STATUS, buf);
+        if (buf.get(0) == 0) {
+            logger.error("Use error");
+            printError(gl);
+        }
     }
 
     public void linkAttribs(GL3 gl, GLSLAttrib... attribs) {
@@ -259,7 +285,7 @@ public class Program {
         ByteBuffer reason = ByteBuffer.wrap(new byte[logLength]);
         gl.glGetProgramInfoLog(pointer, logLength, null, reason);
 
-        System.err.println(new String(reason.array()));
+        logger.error(new String(reason.array()));
     }
 
     public void setUniformVector(String name, VectorF var) {

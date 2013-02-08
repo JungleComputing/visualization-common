@@ -6,7 +6,7 @@ import java.nio.IntBuffer;
 import javax.media.opengl.GL3;
 
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
-
+import nl.esciencecenter.visualization.openglCommon.textures.Texture;
 
 import com.jogamp.common.nio.Buffers;
 
@@ -55,7 +55,7 @@ public class Texture2D extends Texture {
             gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
 
             gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, // Mipmap level.
-                    4, // GL.GL_RGBA, // Internal Texel Format,
+                    GL3.GL_RGBA32F, // GL.GL_RGBA, // Internal Texel Format,
                     width, height, 0, // Border
                     GL3.GL_RGBA, // External format from image,
                     GL3.GL_UNSIGNED_BYTE, pixelBuffer // Imagedata as ByteBuffer

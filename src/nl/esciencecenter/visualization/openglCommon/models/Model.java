@@ -7,11 +7,7 @@ import javax.media.opengl.GL3;
 import nl.esciencecenter.visualization.openglCommon.datastructures.GLSLAttrib;
 import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.datastructures.VBO;
-import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
-import nl.esciencecenter.visualization.openglCommon.math.MatF4;
-import nl.esciencecenter.visualization.openglCommon.math.MatrixFMath;
 import nl.esciencecenter.visualization.openglCommon.shaders.Program;
-
 
 public class Model {
     public static enum vertex_format {
@@ -24,7 +20,6 @@ public class Model {
     protected int           numVertices;
 
     protected Material      material;
-    protected float         scale;
 
     private boolean         initialized = false;
 
@@ -36,14 +31,16 @@ public class Model {
 
         this.material = material;
         this.format = format;
-        this.scale = 1f;
     }
 
     public void init(GL3 gl) {
         if (!initialized) {
-            GLSLAttrib vAttrib = new GLSLAttrib(vertices, "MCvertex", GLSLAttrib.SIZE_FLOAT, 4);
-            GLSLAttrib nAttrib = new GLSLAttrib(normals, "MCnormal", GLSLAttrib.SIZE_FLOAT, 3);
-            GLSLAttrib tAttrib = new GLSLAttrib(texCoords, "MCtexCoord", GLSLAttrib.SIZE_FLOAT, 3);
+            GLSLAttrib vAttrib = new GLSLAttrib(vertices, "MCvertex",
+                    GLSLAttrib.SIZE_FLOAT, 4);
+            GLSLAttrib nAttrib = new GLSLAttrib(normals, "MCnormal",
+                    GLSLAttrib.SIZE_FLOAT, 3);
+            GLSLAttrib tAttrib = new GLSLAttrib(texCoords, "MCtexCoord",
+                    GLSLAttrib.SIZE_FLOAT, 3);
 
             vbo = new VBO(gl, vAttrib, nAttrib, tAttrib);
         }
@@ -58,10 +55,6 @@ public class Model {
         if (initialized) {
             vbo.delete(gl);
         }
-    }
-
-    public void setScale(float newScale) {
-        this.scale = newScale;
     }
 
     public VBO getVBO() {
@@ -80,19 +73,7 @@ public class Model {
         material = newMaterial;
     }
 
-    public void draw(GL3 gl, Program program, MatF4 MVMatrix) {
-        program.setUniformVector("DiffuseMaterial", material.diffuse);
-        program.setUniformVector("AmbientMaterial", material.ambient);
-        program.setUniformVector("SpecularMaterial", material.specular);
-
-        program.setUniformMatrix("MVMatrix", MVMatrix.mul(MatrixFMath.scale(scale)));
-
-        try {
-            program.use(gl);
-        } catch (UninitializedException e) {
-            e.printStackTrace();
-        }
-
+    public void draw(GL3 gl, Program program) {
         vbo.bind(gl);
 
         program.linkAttribs(gl, vbo.getAttribs());

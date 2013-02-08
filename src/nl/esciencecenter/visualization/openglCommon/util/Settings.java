@@ -1,41 +1,50 @@
 package nl.esciencecenter.visualization.openglCommon.util;
 
 public class Settings {
-    private boolean  STEREO_RENDERING           = true;
-    private boolean  STEREO_SWITCHED            = true;
+    private boolean              STEREO_RENDERING              = true;
+    private boolean              STEREO_SWITCHED               = true;
 
-    private float    STEREO_OCULAR_DISTANCE_MIN = 0f;
-    private float    STEREO_OCULAR_DISTANCE_DEF = .2f;
-    private float    STEREO_OCULAR_DISTANCE_MAX = 1f;
+    private float                STEREO_OCULAR_DISTANCE_MIN    = 0f;
+    private float                STEREO_OCULAR_DISTANCE_DEF    = .2f;
+    private float                STEREO_OCULAR_DISTANCE_MAX    = 1f;
 
     // Size settings for default startup and screenshots
-    private int      DEFAULT_SCREEN_WIDTH       = 1024;
-    private int      DEFAULT_SCREEN_HEIGHT      = 768;
+    private int                  DEFAULT_SCREEN_WIDTH          = 1920;
+    private int                  DEFAULT_SCREEN_HEIGHT         = 1080;
 
-    private int      SCREENSHOT_SCREEN_WIDTH    = 1280;
-    private int      SCREENSHOT_SCREEN_HEIGHT   = 720;
+    private int                  SCREENSHOT_SCREEN_WIDTH       = 1920;
+    private int                  SCREENSHOT_SCREEN_HEIGHT      = 1080;
 
     // Settings for the initial view
-    private int      INITIAL_SIMULATION_FRAME   = 0;
-    private float    INITIAL_ROTATION_X         = 17f;
-    private float    INITIAL_ROTATION_Y         = -25f;
-    private float    INITIAL_ZOOM               = -390.0f;
+    private int                  INITIAL_SIMULATION_FRAME      = 0;
+    private float                INITIAL_ROTATION_X            = 17f;
+    private float                INITIAL_ROTATION_Y            = -25f;
+    private float                INITIAL_ZOOM                  = -390.0f;
 
     // Setting per movie frame
-    private boolean  MOVIE_ROTATE               = true;
-    private float    MOVIE_ROTATION_SPEED_MIN   = -1f;
-    private float    MOVIE_ROTATION_SPEED_MAX   = 1f;
-    private float    MOVIE_ROTATION_SPEED_DEF   = -0.25f;
+    private boolean              MOVIE_ROTATE                  = true;
+    private float                MOVIE_ROTATION_SPEED_MIN      = -1f;
+    private float                MOVIE_ROTATION_SPEED_MAX      = 1f;
+    private float                MOVIE_ROTATION_SPEED_DEF      = -0.25f;
 
     // Settings for the gas cloud octree
-    private int      MAX_OCTREE_DEPTH           = 25;
-    private float    OCTREE_EDGES               = 800f;
+    private int                  MAX_OCTREE_DEPTH              = 25;
+    private float                OCTREE_EDGES                  = 800f;
 
     // Settings that should never change, but are listed here to make sure they
     // can be found if necessary
-    private int      MAX_EXPECTED_MODELS        = 1000;
+    private int                  MAX_EXPECTED_MODELS           = 1000;
 
-    protected String SCREENSHOT_PATH            = System.getProperty("user.dir") + System.getProperty("path.separator");
+    protected String             SCREENSHOT_PATH               = System.getProperty("user.dir")
+                                                                       + System.getProperty("path.separator");
+
+    private final String[]       ACCEPTABLE_NETCDF_EXTENSTIONS = { ".nc" };
+
+    private final String         CURRENT_NETCDF_EXTENSTION     = "nc";
+
+    private static final boolean TOUCH_CONNECTION_ENABLED      = false;
+    private static final int     INTERFACE_WIDTH               = 240;
+    private static final int     INTERFACE_HEIGHT              = 1080;
 
     private static class SingletonHolder {
         public final static Settings instance = new Settings();
@@ -53,28 +62,38 @@ public class Settings {
             STEREO_RENDERING = props.getBooleanProperty("STEREO_RENDERING");
             STEREO_SWITCHED = props.getBooleanProperty("STEREO_SWITCHED");
 
-            STEREO_OCULAR_DISTANCE_MIN = props.getFloatProperty("STEREO_OCULAR_DISTANCE_MIN");
-            STEREO_OCULAR_DISTANCE_MAX = props.getFloatProperty("STEREO_OCULAR_DISTANCE_MAX");
-            STEREO_OCULAR_DISTANCE_DEF = props.getFloatProperty("STEREO_OCULAR_DISTANCE_DEF");
+            STEREO_OCULAR_DISTANCE_MIN = props
+                    .getFloatProperty("STEREO_OCULAR_DISTANCE_MIN");
+            STEREO_OCULAR_DISTANCE_MAX = props
+                    .getFloatProperty("STEREO_OCULAR_DISTANCE_MAX");
+            STEREO_OCULAR_DISTANCE_DEF = props
+                    .getFloatProperty("STEREO_OCULAR_DISTANCE_DEF");
 
             // Size settings for default startup and screenshots
             DEFAULT_SCREEN_WIDTH = props.getIntProperty("DEFAULT_SCREEN_WIDTH");
-            DEFAULT_SCREEN_HEIGHT = props.getIntProperty("DEFAULT_SCREEN_HEIGHT");
+            DEFAULT_SCREEN_HEIGHT = props
+                    .getIntProperty("DEFAULT_SCREEN_HEIGHT");
 
-            SCREENSHOT_SCREEN_WIDTH = props.getIntProperty("SCREENSHOT_SCREEN_WIDTH");
-            SCREENSHOT_SCREEN_HEIGHT = props.getIntProperty("SCREENSHOT_SCREEN_HEIGHT");
+            SCREENSHOT_SCREEN_WIDTH = props
+                    .getIntProperty("SCREENSHOT_SCREEN_WIDTH");
+            SCREENSHOT_SCREEN_HEIGHT = props
+                    .getIntProperty("SCREENSHOT_SCREEN_HEIGHT");
 
             // Settings for the initial view
-            INITIAL_SIMULATION_FRAME = props.getIntProperty("INITIAL_SIMULATION_FRAME");
+            INITIAL_SIMULATION_FRAME = props
+                    .getIntProperty("INITIAL_SIMULATION_FRAME");
             INITIAL_ROTATION_X = props.getFloatProperty("INITIAL_ROTATION_X");
             INITIAL_ROTATION_Y = props.getFloatProperty("INITIAL_ROTATION_Y");
             INITIAL_ZOOM = props.getFloatProperty("INITIAL_ZOOM");
 
             // Setting per movie frame
             MOVIE_ROTATE = props.getBooleanProperty("MOVIE_ROTATE");
-            MOVIE_ROTATION_SPEED_MIN = props.getFloatProperty("MOVIE_ROTATION_SPEED_MIN");
-            MOVIE_ROTATION_SPEED_MAX = props.getFloatProperty("MOVIE_ROTATION_SPEED_MAX");
-            MOVIE_ROTATION_SPEED_DEF = props.getFloatProperty("MOVIE_ROTATION_SPEED_DEF");
+            MOVIE_ROTATION_SPEED_MIN = props
+                    .getFloatProperty("MOVIE_ROTATION_SPEED_MIN");
+            MOVIE_ROTATION_SPEED_MAX = props
+                    .getFloatProperty("MOVIE_ROTATION_SPEED_MAX");
+            MOVIE_ROTATION_SPEED_DEF = props
+                    .getFloatProperty("MOVIE_ROTATION_SPEED_DEF");
 
             // Settings for the gas cloud octree
             MAX_OCTREE_DEPTH = props.getIntProperty("MAX_OCTREE_DEPTH");
@@ -219,5 +238,25 @@ public class Settings {
 
     public void setScreenshotPath(String newPath) {
         SCREENSHOT_PATH = newPath;
+    }
+
+    public String getCurrentNetCDFExtension() {
+        return CURRENT_NETCDF_EXTENSTION;
+    }
+
+    public String[] getAcceptableNetCDFExtensions() {
+        return ACCEPTABLE_NETCDF_EXTENSTIONS;
+    }
+
+    public boolean isTouchConnected() {
+        return TOUCH_CONNECTION_ENABLED;
+    }
+
+    public int getInterfaceWidth() {
+        return INTERFACE_WIDTH;
+    }
+
+    public int getInterfaceHeight() {
+        return INTERFACE_HEIGHT;
     }
 }

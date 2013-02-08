@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL3;
 
+import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
 import nl.esciencecenter.visualization.openglCommon.math.MatF4;
 import nl.esciencecenter.visualization.openglCommon.math.MatrixFMath;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
@@ -12,20 +13,19 @@ import nl.esciencecenter.visualization.openglCommon.models.Model;
 import nl.esciencecenter.visualization.openglCommon.shaders.Program;
 import nl.esciencecenter.visualization.openglCommon.shaders.ProgramLoader;
 
-
 public class SGNode {
-    protected ProgramLoader loader;
-    protected MatF4 TMatrix;
+    protected ProgramLoader          loader;
+    protected MatF4                  TMatrix;
     // protected Mat4 RMatrix;
     // protected Mat4 SMatrix;
 
-    protected ArrayList<SGNode> children;
+    protected ArrayList<SGNode>      children;
 
-    protected ArrayList<Model> models;
+    protected ArrayList<Model>       models;
 
     protected ArrayList<LightSource> lightsources;
 
-    private boolean initialized = false;
+    private boolean                  initialized = false;
 
     public SGNode(ProgramLoader loader) {
         this.loader = loader;
@@ -88,11 +88,20 @@ public class SGNode {
         this.TMatrix = TMatrix.mul(MatrixFMath.rotationZ(rotation.get(2)));
     }
 
-    public synchronized void draw(GL3 gl, Program program, MatF4 MVMatrix) {
+    public synchronized void draw(GL3 gl, Program program, MatF4 MVMatrix)
+            throws UninitializedException {
+        if (!initialized) {
+            throw new UninitializedException();
+        }
+
         MatF4 newM = MVMatrix.mul(TMatrix);
 
         for (Model m : models) {
-            m.draw(gl, program, newM);
+            program.setUniformMatrix("MVMatrix", newM);
+
+            program.use(gl);
+
+            m.draw(gl, program);
         }
 
         for (SGNode child : children) {

@@ -6,65 +6,65 @@ import java.nio.IntBuffer;
 import javax.media.opengl.GL3;
 
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
-
+import nl.esciencecenter.visualization.openglCommon.textures.Texture;
 
 import com.jogamp.common.nio.Buffers;
 
 public class Texture3D extends Texture {
+
+    protected ByteBuffer pixelBuffer;
+    protected int        width, height, depth;
     protected IntBuffer  pointer;
-    protected ByteBuffer image;
-    public int           size;
 
-    public Texture3D(int size, int gLMultiTexUnit) {
-        super(gLMultiTexUnit);
-        pointer = null;
-        image = Buffers.newDirectByteBuffer(size * size * size * 4);
-        this.size = size;
+    protected boolean    initialized = false;
 
-        // makePerlin3d(size);
-    }
-
-    public Texture3D(ByteBuffer image, int gLMultiTexUnit) {
-        super(gLMultiTexUnit);
-        pointer = null;
-        this.image = image;
-        this.size = (int) Math.cbrt(image.limit());
-        System.out.println("Size: " + this.size);
-    }
-
-    public ByteBuffer getImage() {
-        return image;
+    public Texture3D(int glMultitexUnit) {
+        super(glMultitexUnit);
     }
 
     public void init(GL3 gl) {
-        if (image == null)
-            System.out.println("make first!");
+        if (!initialized) {
+            if (pixelBuffer == null) {
+                System.err
+                        .println("Add a pixelbuffer first, by using a custom constructor. The Texture2D constructor is only meant to be extended.");
+            }
 
-        gl.glActiveTexture(glMultiTexUnit);
-        gl.glEnable(GL3.GL_TEXTURE_3D);
+            // Tell OpenGL we want to use textures
+            gl.glEnable(GL3.GL_TEXTURE_3D);
+            gl.glActiveTexture(glMultiTexUnit);
 
-        // Create new texture pointer and bind it so we can manipulate it.
+            // Create a Texture Object
+            pointer = Buffers.newDirectIntBuffer(1);
+            gl.glGenTextures(1, pointer);
 
-        pointer = Buffers.newDirectIntBuffer(1);
-        gl.glGenTextures(1, pointer);
+            // Tell OpenGL that this texture is 2D and we want to use it
+            gl.glBindTexture(GL3.GL_TEXTURE_3D, pointer.get(0));
 
-        gl.glBindTexture(GL3.GL_TEXTURE_3D, pointer.get(0));
+            // Wrap.
+            gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S,
+                    GL3.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T,
+                    GL3.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R,
+                    GL3.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER,
+                    GL3.GL_LINEAR);
+            gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER,
+                    GL3.GL_LINEAR);
 
-        // Wrap.
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_MIRRORED_REPEAT);
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_MIRRORED_REPEAT);
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_MIRRORED_REPEAT);
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-        gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
+            // Specifies the alignment requirements for the start of each pixel
+            // row in memory.
+            gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
 
-        gl.glPixelStorei(GL3.GL_UNPACK_ALIGNMENT, 1);
+            gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0, // Mipmap level.
+                    GL3.GL_RGBA32F, // GL.GL_RGBA, // Internal Texel Format,
+                    width, height, depth, 0, // Border
+                    GL3.GL_RGBA, // External format from image,
+                    GL3.GL_UNSIGNED_BYTE, pixelBuffer // Imagedata as ByteBuffer
+            );
 
-        gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0, // Mipmap level.
-                GL3.GL_RGBA, // GL.GL_RGBA, // Internal Texel Format,
-                size, size, size, 0, // Border
-                GL3.GL_RGBA, // External format from image,
-                GL3.GL_BYTE, image // Imagedata as ByteBuffer
-        );
+            initialized = true;
+        }
     }
 
     public void delete(GL3 gl) {
@@ -72,9 +72,37 @@ public class Texture3D extends Texture {
     }
 
     public void use(GL3 gl) throws UninitializedException {
-        gl.glActiveTexture(glMultiTexUnit);
+        if (!initialized) {
+            init(gl);
+        }
+
         gl.glEnable(GL3.GL_TEXTURE_3D);
+        gl.glActiveTexture(glMultiTexUnit);
         gl.glBindTexture(GL3.GL_TEXTURE_3D, getPointer());
+    }
+
+    public void unBind(GL3 gl) {
+        gl.glBindTexture(GL3.GL_TEXTURE_3D, 0);
+    }
+
+    public ByteBuffer getPixelBuffer() {
+        return pixelBuffer;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public Texture3D copy(GL3 gl, int glMultitexUnit) {
+        Texture3D result = new Texture3D(glMultitexUnit);
+        result.pixelBuffer = pixelBuffer.duplicate();
+        result.init(gl);
+
+        return result;
     }
 
     public int getPointer() throws UninitializedException {

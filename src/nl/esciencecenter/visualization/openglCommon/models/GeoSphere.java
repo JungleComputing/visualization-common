@@ -9,7 +9,6 @@ import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 import nl.esciencecenter.visualization.openglCommon.util.Settings;
 
-
 public class GeoSphere extends Model {
     Settings        settings      = Settings.getInstance();
 

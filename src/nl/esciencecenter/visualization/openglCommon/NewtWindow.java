@@ -1,9 +1,10 @@
 package nl.esciencecenter.visualization.openglCommon;
 
-import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+
+import nl.esciencecenter.visualization.openglCommon.input.InputHandler;
 
 import com.jogamp.newt.Display;
 import com.jogamp.newt.NewtFactory;
@@ -13,73 +14,59 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.Animator;
 
-public class NewtWindow implements GLEventListener {
-    final GLWindow glWindow;
+public class NewtWindow {
+    static int screenIdx = 0;
 
-    public static void main(String[] arguments) {
-        new NewtWindow(0, 800, 600);
-    }
+    public NewtWindow(boolean forceGL3, InputHandler inputHandler,
+            GLEventListener glEventListener, int width, int height,
+            String windowTitle) {
+        final GLProfile glp;
+        if (forceGL3) {
+            glp = GLProfile.get(GLProfile.GL3);
+        } else {
+            glp = GLProfile.get(GLProfile.GLES2);
+        }
 
-    public NewtWindow(int screenIdx, int width, int height) {
+        // Set up the GL context
+        final GLCapabilities caps = new GLCapabilities(glp);
+        caps.setBackgroundOpaque(true);
+        caps.setHardwareAccelerated(true);
+        caps.setDoubleBuffered(true);
+
+        // Add Anti-Aliasing
+        caps.setSampleBuffers(true);
+        caps.setAlphaBits(4);
+        caps.setNumSamples(4);
+
+        // Create the Newt Window
         Display dpy = NewtFactory.createDisplay(null);
         Screen screen = NewtFactory.createScreen(dpy, screenIdx);
+        final GLWindow glWindow = GLWindow.create(screen, caps);
 
-        GLCapabilities glCapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL2ES2));
-        glCapabilities.setBackgroundOpaque(true);
+        glWindow.setTitle(windowTitle);
 
-        // Anti-Aliasing
-        glCapabilities.setSampleBuffers(true);
-        glCapabilities.setAlphaBits(4);
-        glCapabilities.setNumSamples(4);
-
-        glWindow = GLWindow.create(screen, glCapabilities);
-
-        glWindow.setTitle("NEWT Test");
-
-        glWindow.setSize(width, height);
-        glWindow.setPosition(0, 0);
-
-        glWindow.setUndecorated(false);
-        glWindow.setAlwaysOnTop(false);
-        glWindow.setFullscreen(true);
-        glWindow.setPointerVisible(true);
-        glWindow.confinePointer(false);
-
-        Animator animator = new Animator(glWindow);
-
+        // Add listeners
+        glWindow.addMouseListener(inputHandler);
+        glWindow.addKeyListener(inputHandler);
         glWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowDestroyNotify(WindowEvent arg0) {
+                System.exit(0);
+            }
+
+            @Override
             public void windowDestroyed(WindowEvent arg0) {
-                super.windowDestroyed(arg0);
                 System.exit(0);
             }
         });
+        glWindow.addGLEventListener(glEventListener);
 
-        animator.start();
+        // Create the Animator
+        final Animator animator = new Animator();
+        animator.add(glWindow);
+
+        glWindow.setSize(width, height);
 
         glWindow.setVisible(true);
-    }
-
-    public GLWindow getGLWindow() {
-        return glWindow;
-    }
-
-    @Override
-    public void display(GLAutoDrawable arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void dispose(GLAutoDrawable arg0) {
-    }
-
-    @Override
-    public void init(GLAutoDrawable arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int arg3, int arg4) {
     }
 }

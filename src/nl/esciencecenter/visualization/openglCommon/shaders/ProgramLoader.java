@@ -14,6 +14,9 @@ import nl.esciencecenter.visualization.openglCommon.datastructures.GLSLAttrib;
 import nl.esciencecenter.visualization.openglCommon.exceptions.CompilationFailedException;
 import nl.esciencecenter.visualization.openglCommon.math.MatrixF;
 import nl.esciencecenter.visualization.openglCommon.math.VectorF;
+import nl.esciencecenter.visualization.openglCommon.shaders.FragmentShader;
+import nl.esciencecenter.visualization.openglCommon.shaders.GeometryShader;
+import nl.esciencecenter.visualization.openglCommon.shaders.VertexShader;
 
 import com.jogamp.common.nio.Buffers;
 

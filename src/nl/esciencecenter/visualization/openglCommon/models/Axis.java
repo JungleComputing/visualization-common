@@ -6,14 +6,16 @@ import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 
 public class Axis extends Model {
-    public Axis(Material material, VecF3 start, VecF3 end, float majorInterval, float minorInterval) {
+    public Axis(Material material, VecF3 start, VecF3 end, float majorInterval,
+            float minorInterval) {
         super(material, vertex_format.LINES);
 
         float length = VectorFMath.length(end.sub(start));
         int numMajorIntervals = (int) Math.floor(length / majorInterval);
         int numMinorIntervals = (int) Math.floor(length / minorInterval);
 
-        int numVertices = 2 + (numMajorIntervals * 2) - 4 + (numMinorIntervals * 2) - 4;
+        int numVertices = 2 + (numMajorIntervals * 2) - 4
+                + (numMinorIntervals * 2) - 4;
 
         VecF4[] points = new VecF4[numVertices];
         VecF3[] normals = new VecF3[numVertices];
@@ -44,17 +46,17 @@ public class Axis extends Model {
         VecF3 nil = new VecF3();
 
         for (int i = 1; i < numMajorIntervals / 2; i++) {
-            arrayindex = addInterval(points, normals, tCoords, arrayindex, nil.add(vec.mul(majorInterval * i)),
-                    perpendicular, 2f);
-            arrayindex = addInterval(points, normals, tCoords, arrayindex, nil.sub(vec.mul(majorInterval * i)),
-                    perpendicular, 2f);
+            arrayindex = addInterval(points, normals, tCoords, arrayindex,
+                    nil.add(vec.mul(majorInterval * i)), perpendicular, 2f);
+            arrayindex = addInterval(points, normals, tCoords, arrayindex,
+                    nil.sub(vec.mul(majorInterval * i)), perpendicular, 2f);
         }
 
         for (int i = 1; i < numMinorIntervals / 2; i++) {
-            arrayindex = addInterval(points, normals, tCoords, arrayindex, nil.add(vec.mul(minorInterval * i)),
-                    perpendicular, .5f);
-            arrayindex = addInterval(points, normals, tCoords, arrayindex, nil.sub(vec.mul(minorInterval * i)),
-                    perpendicular, .5f);
+            arrayindex = addInterval(points, normals, tCoords, arrayindex,
+                    nil.add(vec.mul(minorInterval * i)), perpendicular, .5f);
+            arrayindex = addInterval(points, normals, tCoords, arrayindex,
+                    nil.sub(vec.mul(minorInterval * i)), perpendicular, .5f);
 
         }
 
@@ -64,8 +66,8 @@ public class Axis extends Model {
         this.texCoords = VectorFMath.toBuffer(tCoords);
     }
 
-    private int addInterval(VecF4[] points, VecF3[] normals, VecF3[] tCoords, int arrayindex, VecF3 center,
-            VecF3 alignment, float size) {
+    private int addInterval(VecF4[] points, VecF3[] normals, VecF3[] tCoords,
+            int arrayindex, VecF3 center, VecF3 alignment, float size) {
         points[arrayindex] = new VecF4(center.add(alignment.mul(size)), 1f);
         normals[arrayindex] = VectorFMath.normalize(alignment);
         tCoords[arrayindex] = new VecF3(0, 0, 0);
