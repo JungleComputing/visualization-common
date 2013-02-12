@@ -64,6 +64,7 @@ public class NewtWindow {
         // Create the Animator
         final Animator animator = new Animator();
         animator.add(glWindow);
+        animator.start();
 
         glWindow.setSize(width, height);
 
