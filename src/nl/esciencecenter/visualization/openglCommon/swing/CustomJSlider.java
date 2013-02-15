@@ -5,12 +5,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JSlider;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
 public class CustomJSlider extends JSlider {
     private static final long serialVersionUID = -3067450096465148814L;
 
     public CustomJSlider(final BasicSliderUI ui) {
+        ChangeListener[] cl = getChangeListeners();
+        for (ChangeListener l : cl)
+            removeChangeListener(l); // remove UI-installed ChangeListeners
+
         MouseListener[] listeners = getMouseListeners();
         for (MouseListener l : listeners)
             removeMouseListener(l); // remove UI-installed TrackListener
