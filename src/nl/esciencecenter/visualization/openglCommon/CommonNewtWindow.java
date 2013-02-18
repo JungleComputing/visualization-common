@@ -14,17 +14,31 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.Animator;
 
-public class NewtWindow {
+/**
+ * @author maarten
+ *         Common (extendible) class for an OpenGL window.
+ * 
+ */
+public abstract class CommonNewtWindow {
     static int screenIdx = 0;
 
-    public NewtWindow(boolean forceGL3, InputHandler inputHandler,
+    /**
+     * 
+     * @param forceGL3
+     * @param inputHandler
+     * @param glEventListener
+     * @param width
+     * @param height
+     * @param windowTitle
+     */
+    public CommonNewtWindow(boolean forceGL3, InputHandler inputHandler,
             GLEventListener glEventListener, int width, int height,
             String windowTitle) {
         final GLProfile glp;
         if (forceGL3) {
             glp = GLProfile.get(GLProfile.GL3);
         } else {
-            glp = GLProfile.get(GLProfile.GLES2);
+            glp = GLProfile.get(GLProfile.GL2ES2);
         }
 
         // Set up the GL context

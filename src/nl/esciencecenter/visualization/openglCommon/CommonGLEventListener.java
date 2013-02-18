@@ -16,6 +16,12 @@ import nl.esciencecenter.visualization.openglCommon.shaders.ProgramLoader;
 import nl.esciencecenter.visualization.openglCommon.text.FontFactory;
 import nl.esciencecenter.visualization.openglCommon.text.TypecastFont;
 
+/**
+ * @author maarten
+ *         Common (extendible) class for OpenGL event listeners, providing
+ *         several helper methods.
+ * 
+ */
 public abstract class CommonGLEventListener implements GLEventListener {
     protected final float         radius  = 1.0f;
     protected final float         ftheta  = 0.0f;
@@ -32,7 +38,14 @@ public abstract class CommonGLEventListener implements GLEventListener {
     protected int                 fontSet = FontFactory.UBUNTU;
     protected TypecastFont        font;
 
-    public CommonGLEventListener(InputHandler inputHandler, boolean post_process) {
+    /**
+     * Creates a new GLEventListener
+     * 
+     * @param inputHandler
+     *            an InputHandler to handle Mouse and Keyboard events
+     * 
+     */
+    public CommonGLEventListener(InputHandler inputHandler) {
         this.loader = new ProgramLoader();
         this.inputHandler = inputHandler;
         this.font = (TypecastFont) FontFactory.get(fontSet).getDefault();
@@ -96,6 +109,15 @@ public abstract class CommonGLEventListener implements GLEventListener {
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
     }
 
+    /**
+     * A helper function that generates a ModelView Matrix based on the current
+     * rotation and viewDist defined in the inputHandler.
+     * Uses the radius, ftheta and phi global variables.
+     * 
+     * @return
+     *         A new Modelview Matrix that defines a rotated and translated view
+     *         at coordinates (0,0,0).
+     */
     public MatF4 lookAt() {
         Point4 eye = new Point4(
                 (float) (radius * Math.sin(ftheta) * Math.cos(phi)),
@@ -113,6 +135,14 @@ public abstract class CommonGLEventListener implements GLEventListener {
         return mv;
     }
 
+    /**
+     * A helper function that generates a Perspective Matrix.
+     * Uses the fovy, aspect, zNear and zFar global variables.
+     * 
+     * @return
+     *         A new Perspective Matrix that defines a common perspective
+     *         frustum.
+     */
     public MatF4 perspective() {
         return MatrixFMath.perspective(fovy, aspect, zNear, zFar);
 
