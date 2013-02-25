@@ -17,38 +17,60 @@ import nl.esciencecenter.visualization.openglCommon.text.FontFactory;
 import nl.esciencecenter.visualization.openglCommon.text.TypecastFont;
 
 /**
- * @author maarten
- *         Common (extendible) class for OpenGL event listeners, providing
- *         several helper methods.
+ * Common (extendible) class for OpenGL event listeners, providing
+ * several helper methods.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
  * 
  */
 public abstract class CommonGLEventListener implements GLEventListener {
+    /** General variables needed for lookAt method */
     protected final float         radius  = 1.0f;
     protected final float         ftheta  = 0.0f;
     protected final float         phi     = 0.0f;
 
+    /** General variables needed for a default perspective */
     protected final float         fovy    = 45.0f;
-    float                         aspect;
     protected final float         zNear   = 0.1f;
     protected final float         zFar    = 3000.0f;
 
+    /**
+     * A default implementation of the ProgramLoader, needed for programmable
+     * shader functionality
+     */
     protected final ProgramLoader loader;
-    protected final InputHandler  inputHandler;
+
+    /**
+     * Aspect ratio variable, normally set by the reshape function
+     */
+    protected float               aspect;
 
     protected int                 fontSet = FontFactory.UBUNTU;
     protected TypecastFont        font;
 
+    protected float               inputRotationX, inputRotationY;
+    protected float               inputViewDistance;
+    protected InputHandler        inputHandler;
+
     /**
      * Creates a new GLEventListener
+     */
+    public CommonGLEventListener() {
+        this.loader = new ProgramLoader();
+        this.font = (TypecastFont) FontFactory.get(fontSet).getDefault();
+    }
+
+    /**
+     * Creates a new GLEventListener with a predefined inputHandler
      * 
      * @param inputHandler
-     *            an InputHandler to handle Mouse and Keyboard events
-     * 
+     *            A predefined Input event Handler (example available in
+     *            nl.esciencecenter.visualization.openglCommon.input)
      */
     public CommonGLEventListener(InputHandler inputHandler) {
         this.loader = new ProgramLoader();
-        this.inputHandler = inputHandler;
         this.font = (TypecastFont) FontFactory.get(fontSet).getDefault();
+        this.inputHandler = inputHandler;
     }
 
     @Override
@@ -100,19 +122,16 @@ public abstract class CommonGLEventListener implements GLEventListener {
 
         final GL3 gl = drawable.getContext().getGL().getGL3();
 
-        int width = drawable.getWidth();
-        int height = drawable.getHeight();
-        aspect = (float) width / (float) height;
-
-        gl.glViewport(0, 0, width, height);
-
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
     }
 
     /**
-     * A helper function that generates a ModelView Matrix based on the current
-     * rotation and viewDist defined in the inputHandler.
-     * Uses the radius, ftheta and phi global variables.
+     * A helper function that generates a ModelView Matrix based on either the
+     * current
+     * inputRotationX, inputRotationY and inputViewDistance, or, if an Input
+     * event Handler was defined by the constructor, on the viewDist and
+     * rotation defined therein.
+     * Also uses the predifined radius, ftheta and phi global variables.
      * 
      * @return
      *         A new Modelview Matrix that defines a rotated and translated view
@@ -127,10 +146,20 @@ public abstract class CommonGLEventListener implements GLEventListener {
         VecF4 up = new VecF4(0.0f, 1.0f, 0.0f, 0.0f);
 
         MatF4 mv = MatrixFMath.lookAt(eye, at, up);
-        mv = mv.mul(MatrixFMath.translate(new VecF3(0f, 0f, inputHandler
-                .getViewDist())));
-        mv = mv.mul(MatrixFMath.rotationX(inputHandler.getRotation().get(0)));
-        mv = mv.mul(MatrixFMath.rotationY(inputHandler.getRotation().get(1)));
+
+        if (inputHandler != null) {
+            mv = mv.mul(MatrixFMath.translate(new VecF3(0f, 0f,
+                    inputViewDistance)));
+            mv = mv.mul(MatrixFMath.rotationX(inputRotationX));
+            mv = mv.mul(MatrixFMath.rotationY(inputRotationY));
+        } else {
+            mv = mv.mul(MatrixFMath.translate(new VecF3(0f, 0f, inputHandler
+                    .getViewDist())));
+            mv = mv.mul(MatrixFMath
+                    .rotationX(inputHandler.getRotation().get(0)));
+            mv = mv.mul(MatrixFMath
+                    .rotationY(inputHandler.getRotation().get(1)));
+        }
 
         return mv;
     }
@@ -161,7 +190,13 @@ public abstract class CommonGLEventListener implements GLEventListener {
             e.printStackTrace();
         }
 
-        GL3 gl = drawable.getGL().getGL3();
+        final GL3 gl = drawable.getContext().getGL().getGL3();
+
+        int width = drawable.getWidth();
+        int height = drawable.getHeight();
+        aspect = (float) width / (float) height;
+
+        gl.glViewport(0, 0, width, height);
         gl.glViewport(0, 0, w, h);
     }
 
@@ -170,5 +205,50 @@ public abstract class CommonGLEventListener implements GLEventListener {
         GL3 gl = drawable.getGL().getGL3();
 
         loader.cleanup(gl);
+    }
+
+    /**
+     * @return the inputRotationX
+     */
+    public float getInputRotationX() {
+        return inputRotationX;
+    }
+
+    /**
+     * @param inputRotationX
+     *            the inputRotationX to set
+     */
+    public void setInputRotationX(float inputRotationX) {
+        this.inputRotationX = inputRotationX;
+    }
+
+    /**
+     * @return the inputRotationY
+     */
+    public float getInputRotationY() {
+        return inputRotationY;
+    }
+
+    /**
+     * @param inputRotationY
+     *            the inputRotationY to set
+     */
+    public void setInputRotationY(float inputRotationY) {
+        this.inputRotationY = inputRotationY;
+    }
+
+    /**
+     * @return the inputViewDistance
+     */
+    public float getInputViewDistance() {
+        return inputViewDistance;
+    }
+
+    /**
+     * @param inputViewDistance
+     *            the inputViewDistance to set
+     */
+    public void setInputViewDistance(float inputViewDistance) {
+        this.inputViewDistance = inputViewDistance;
     }
 }

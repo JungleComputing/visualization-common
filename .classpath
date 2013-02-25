@@ -2,11 +2,19 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="lib/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="lib/jogl/gluegen-rt.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://jogamp.org/deployment/v2.0-rc11/javadoc/gluegen/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/commons-math3-3.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.0.jar"/>
-	<classpathentry kind="lib" path="lib/jogl/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/jogl/jogl-all.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://jogamp.org/deployment/v2.0-rc11/javadoc/jogl/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.5.6.jar"/>

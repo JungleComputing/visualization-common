@@ -1,111 +1,64 @@
 package nl.esciencecenter.visualization.openglCommon.input;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
-import nl.esciencecenter.visualization.openglCommon.math.VecF2;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
-import nl.esciencecenter.visualization.openglCommon.util.Settings;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
 
-public class InputHandler implements TouchEventHandler, MouseListener,
+/**
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ *         A singleton pattern generic Input event Handler for use in OpenGL
+ *         applications.
+ *         Currently handles only basic mouse events (left-click-drag,
+ *         scrollwheel).
+ * 
+ */
+public class InputHandler implements MouseListener,
         KeyListener {
-    private final Settings settings = Settings.getInstance();
 
+    /**
+     * Octants are used to define a direction from which the viewer is looking
+     * at the scene, these are useful in Octrees.
+     */
     public static enum octants {
         PPP, PPN, PNP, PNN, NPP, NPN, NNP, NNN
     }
 
-    protected VecF3           rotation;
-    protected float           viewDist            = -150f;
+    protected float rotationXorigin     = 0;
+    protected float rotationX;
 
-    protected float           rotationXorigin     = 0;
-    protected float           rotationX;
+    protected float rotationYorigin     = 0;
+    protected float rotationY;
 
-    protected float           rotationYorigin     = 0;
-    protected float           rotationY;
+    protected float dragLeftXorigin;
+    protected float dragLeftYorigin;
 
-    protected float           dragLeftXorigin;
-    protected float           dragLeftYorigin;
-
-    private octants           current_view_octant = octants.PPP;
-
-    private Socket            touchSocket;
-    private ConnectionHandler touchConnection;
-
-    protected float           initialResizeDist;
-
-    int                       currentTouchID      = 0;
-
-    boolean                   selection           = false;
-    int                       selectionLocationX  = -1;
-    int                       selectionLocationY  = -1;
+    public VecF3    rotation;
+    public float    viewDist            = -150f;
+    private octants current_view_octant = octants.PPP;
 
     private static class SingletonHolder {
         public static final InputHandler instance = new InputHandler();
     }
 
+    /**
+     * The only access point for this singleton class.
+     * 
+     * @return
+     *         The only instance of this class allowed at one time.
+     */
     public static InputHandler getInstance() {
         return SingletonHolder.instance;
     }
 
     protected InputHandler() {
         rotation = new VecF3();
-
-        try {
-            if (settings.isTouchConnected()) {
-                touchSocket = new Socket("145.100.39.13", 12345);
-
-                this.touchConnection = new ConnectionHandler(this, touchSocket);
-                new Thread(touchConnection).start();
-            }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void close() {
-        try {
-            if (touchConnection != null) {
-                touchSocket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void OnTouchPoints(double timestamp, TouchPoint[] points, int n) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.isButtonDown(MouseEvent.BUTTON1)) {
-            // System.out.println("X click: " + e.getX());
-            // System.out.println("Y click: " + e.getY());
-
-            selectionLocationX = e.getX();
-            selectionLocationY = e.getY();
-
-            selection = true;
-        }
-    }
-
-    public VecF2 getSelection() throws NoSelectionException {
-        if (selection) {
-            selection = false;
-            return new VecF2(selectionLocationX, selectionLocationY);
-        } else
-            throw new NoSelectionException();
     }
 
     @Override
@@ -219,26 +172,6 @@ public class InputHandler implements TouchEventHandler, MouseListener,
         }
     }
 
-    public octants getCurrentOctant() {
-        return current_view_octant;
-    }
-
-    public VecF3 getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(VecF3 rotation) {
-        this.rotation = rotation;
-    }
-
-    public float getViewDist() {
-        return viewDist;
-    }
-
-    public void setViewDist(float dist) {
-        this.viewDist = dist;
-    }
-
     @Override
     public void keyPressed(KeyEvent arg0) {
         // TODO Auto-generated method stub
@@ -255,5 +188,43 @@ public class InputHandler implements TouchEventHandler, MouseListener,
     public void keyTyped(KeyEvent arg0) {
         // TODO Auto-generated method stub
 
+    }
+
+    /**
+     * 
+     * @return the rotation
+     */
+    public VecF3 getRotation() {
+        return rotation;
+    }
+
+    /**
+     * @param rotation
+     *            the rotation to set
+     */
+    public void setRotation(VecF3 rotation) {
+        this.rotation = rotation;
+    }
+
+    /**
+     * @return the viewDist
+     */
+    public float getViewDist() {
+        return viewDist;
+    }
+
+    /**
+     * @param viewDist
+     *            the viewDist to set
+     */
+    public void setViewDist(float viewDist) {
+        this.viewDist = viewDist;
+    }
+
+    /**
+     * @return the current_view_octant
+     */
+    public octants getCurrent_view_octant() {
+        return current_view_octant;
     }
 }
