@@ -14,7 +14,7 @@ public abstract class CommonInterfacePanel extends JPanel {
     private static final long serialVersionUID = -4937089344123608040L;
 
     /**
-     * Creates a new default JPanel
+     * Creates a new default JPanel with a BorderLayout.
      */
     public CommonInterfacePanel() {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);

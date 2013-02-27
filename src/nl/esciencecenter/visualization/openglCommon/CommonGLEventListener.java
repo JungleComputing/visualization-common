@@ -12,7 +12,7 @@ import nl.esciencecenter.visualization.openglCommon.math.MatrixFMath;
 import nl.esciencecenter.visualization.openglCommon.math.Point4;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
-import nl.esciencecenter.visualization.openglCommon.shaders.ProgramLoader;
+import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgramLoader;
 import nl.esciencecenter.visualization.openglCommon.text.FontFactory;
 import nl.esciencecenter.visualization.openglCommon.text.TypecastFont;
 
@@ -24,39 +24,69 @@ import nl.esciencecenter.visualization.openglCommon.text.TypecastFont;
  * 
  */
 public abstract class CommonGLEventListener implements GLEventListener {
-    /** General variables needed for lookAt method */
-    protected final float         radius  = 1.0f;
-    protected final float         ftheta  = 0.0f;
-    protected final float         phi     = 0.0f;
+    /** General radius variable needed for lookAt method */
+    protected final float               radius  = 1.0f;
+    /** General ftheta variable needed for lookAt method */
+    protected final float               ftheta  = 0.0f;
+    /** General phi variable needed for lookAt method */
+    protected final float               phi     = 0.0f;
 
-    /** General variables needed for a default perspective */
-    protected final float         fovy    = 45.0f;
-    protected final float         zNear   = 0.1f;
-    protected final float         zFar    = 3000.0f;
+    /**
+     * General Field of View Y-direction variable needed for a default
+     * perspective
+     */
+    protected final float               fovy    = 45.0f;
+    /** General Near clipping plane variable needed for a default perspective */
+    protected final float               zNear   = 0.1f;
+    /** General Far clipping plane variable needed for a default perspective */
+    protected final float               zFar    = 3000.0f;
 
     /**
      * A default implementation of the ProgramLoader, needed for programmable
      * shader functionality
      */
-    protected final ProgramLoader loader;
+    protected final ShaderProgramLoader loader;
 
     /**
      * Aspect ratio variable, normally set by the reshape function
      */
-    protected float               aspect;
+    protected float                     aspect;
 
-    protected int                 fontSet = FontFactory.UBUNTU;
-    protected TypecastFont        font;
+    /** Ubuntu fontset is used for HUD elements */
+    protected int                       fontSet = FontFactory.UBUNTU;
+    /** font is used for HUD elements @see fontSet */
+    protected TypecastFont              font;
 
-    protected float               inputRotationX, inputRotationY;
-    protected float               inputViewDistance;
-    protected InputHandler        inputHandler;
+    /**
+     * This variable is used (among others) in the lookAt helper function to
+     * define the ModelView matrix, if no inputHandler was specified when
+     * constructing this class.
+     */
+    protected float                     inputRotationX;
+    /**
+     * This variable is used (among others) in the lookAt helper function to
+     * define the ModelView matrix, if no inputHandler was specified when
+     * constructing this class.
+     */
+    protected float                     inputRotationY;
+    /**
+     * This variable is used (among others) in the lookAt helper function to
+     * define the ModelView matrix, if no inputHandler was specified when
+     * constructing this class.
+     */
+    protected float                     inputViewDistance;
+
+    /**
+     * This inputHandler is used to define the Modelview Matrix in the lookAt
+     * helper function if it is specified upon constructing this class.
+     */
+    protected InputHandler              inputHandler;
 
     /**
      * Creates a new GLEventListener
      */
     public CommonGLEventListener() {
-        this.loader = new ProgramLoader();
+        this.loader = new ShaderProgramLoader();
         this.font = (TypecastFont) FontFactory.get(fontSet).getDefault();
     }
 
@@ -68,35 +98,44 @@ public abstract class CommonGLEventListener implements GLEventListener {
      *            nl.esciencecenter.visualization.openglCommon.input)
      */
     public CommonGLEventListener(InputHandler inputHandler) {
-        this.loader = new ProgramLoader();
+        this.loader = new ShaderProgramLoader();
         this.font = (TypecastFont) FontFactory.get(fontSet).getDefault();
         this.inputHandler = inputHandler;
     }
 
     @Override
     public void init(GLAutoDrawable drawable) {
-        drawable.getContext().makeCurrent();
+        try {
+            final int status = drawable.getContext().makeCurrent();
+            if ((status != GLContext.CONTEXT_CURRENT)
+                    && (status != GLContext.CONTEXT_CURRENT_NEW)) {
+                System.err.println("Error swapping context to onscreen.");
+            }
+        } catch (final GLException e) {
+            System.err.println("Exception while swapping context to onscreen.");
+            e.printStackTrace();
+        }
 
-        // First, init the 'normal' context
-        GL3 gl = drawable.getGL().getGL3();
+        // if (drawable.getGLProfile().isGL3()) {
 
-        // Anti-Aliasing
+        final GL3 gl = drawable.getGL().getGL3();
+
+        // Enable Anti-Aliasing
         gl.glEnable(GL3.GL_LINE_SMOOTH);
         gl.glHint(GL3.GL_LINE_SMOOTH_HINT, GL3.GL_NICEST);
         gl.glEnable(GL3.GL_POLYGON_SMOOTH);
         gl.glHint(GL3.GL_POLYGON_SMOOTH_HINT, GL3.GL_NICEST);
 
-        // Depth testing
+        // Enable Depth testing
         gl.glEnable(GL3.GL_DEPTH_TEST);
         gl.glDepthFunc(GL3.GL_LEQUAL);
         gl.glClearDepth(1.0f);
 
-        // Culling
+        // Enable Culling
         gl.glEnable(GL3.GL_CULL_FACE);
         gl.glCullFace(GL3.GL_BACK);
 
-        // Enable Blending (needed for both Transparency and
-        // Anti-Aliasing
+        // Enable Blending (needed for both Transparency and Anti-Aliasing
         gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
         gl.glEnable(GL3.GL_BLEND);
 
@@ -105,6 +144,34 @@ public abstract class CommonGLEventListener implements GLEventListener {
 
         // Set black background
         gl.glClearColor(0f, 0f, 0f, 0f);
+
+        // } else {
+        // // First, init the 'normal' context
+        // GL2ES2 gl = drawable.getGL().getGL2ES2();
+        //
+        // // Enable Anti-Aliasing
+        // gl.glEnable(GL2ES2.GL_LINE_SMOOTH);
+        // gl.glHint(GL2ES2.GL_LINE_SMOOTH_HINT, GL2ES2.GL_NICEST);
+        //
+        // // Enable Depth testing
+        // gl.glEnable(GL2ES2.GL_DEPTH_TEST);
+        // gl.glDepthFunc(GL2ES2.GL_LEQUAL);
+        // gl.glClearDepth(1.0f);
+        //
+        // // Enable Culling
+        // gl.glEnable(GL2ES2.GL_CULL_FACE);
+        // gl.glCullFace(GL2ES2.GL_BACK);
+        //
+        // // Enable Blending (needed for both Transparency and Anti-Aliasing
+        // gl.glBlendFunc(GL2ES2.GL_SRC_ALPHA, GL2ES2.GL_ONE_MINUS_SRC_ALPHA);
+        // gl.glEnable(GL2ES2.GL_BLEND);
+        //
+        // // Enable Vertical Sync
+        // gl.setSwapInterval(1);
+        //
+        // // Set black background
+        // gl.glClearColor(0f, 0f, 0f, 0f);
+        // }
     }
 
     @Override
@@ -120,9 +187,13 @@ public abstract class CommonGLEventListener implements GLEventListener {
             e.printStackTrace();
         }
 
+        // if (drawable.getGLProfile().isGL3()) {
         final GL3 gl = drawable.getContext().getGL().getGL3();
-
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
+        // } else {
+        // final GL2ES2 gl = drawable.getContext().getGL().getGL2ES2();
+        // gl.glClear(GL2ES2.GL_COLOR_BUFFER_BIT | GL2ES2.GL_DEPTH_BUFFER_BIT);
+        // }
     }
 
     /**
@@ -190,6 +261,7 @@ public abstract class CommonGLEventListener implements GLEventListener {
             e.printStackTrace();
         }
 
+        // if (drawable.getGLProfile().isGL3()) {
         final GL3 gl = drawable.getContext().getGL().getGL3();
 
         int width = drawable.getWidth();
@@ -198,16 +270,47 @@ public abstract class CommonGLEventListener implements GLEventListener {
 
         gl.glViewport(0, 0, width, height);
         gl.glViewport(0, 0, w, h);
+        // } else {
+        // final GL2ES2 gl = drawable.getContext().getGL().getGL2ES2();
+        //
+        // int width = drawable.getWidth();
+        // int height = drawable.getHeight();
+        // aspect = (float) width / (float) height;
+        //
+        // gl.glViewport(0, 0, width, height);
+        // gl.glViewport(0, 0, w, h);
+        // }
     }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
-        GL3 gl = drawable.getGL().getGL3();
+        try {
+            final int status = drawable.getContext().makeCurrent();
+            if ((status != GLContext.CONTEXT_CURRENT)
+                    && (status != GLContext.CONTEXT_CURRENT_NEW)) {
+                System.err.println("Error swapping context to onscreen.");
+            }
+        } catch (final GLException e) {
+            System.err.println("Exception while swapping context to onscreen.");
+            e.printStackTrace();
+        }
+
+        // if (drawable.getGLProfile().isGL3()) {
+        final GL3 gl = drawable.getGL().getGL3();
 
         loader.cleanup(gl);
+        // } else {
+        // GL2ES2 gl = drawable.getGL().getGL2ES2();
+        //
+        // loader.cleanup(gl);
+        // }
     }
 
     /**
+     * Variable used (among others) to define the ModelView matrix in the lookAt
+     * helper function if no inputHandler was specified when constructing this
+     * class.
+     * 
      * @return the inputRotationX
      */
     public float getInputRotationX() {
@@ -215,6 +318,10 @@ public abstract class CommonGLEventListener implements GLEventListener {
     }
 
     /**
+     * Variable used (among others) to define the ModelView matrix in the lookAt
+     * helper function if no inputHandler was specified when constructing this
+     * class.
+     * 
      * @param inputRotationX
      *            the inputRotationX to set
      */
@@ -223,6 +330,10 @@ public abstract class CommonGLEventListener implements GLEventListener {
     }
 
     /**
+     * Variable used (among others) to define the ModelView matrix in the lookAt
+     * helper function if no inputHandler was specified when constructing this
+     * class.
+     * 
      * @return the inputRotationY
      */
     public float getInputRotationY() {
@@ -230,6 +341,10 @@ public abstract class CommonGLEventListener implements GLEventListener {
     }
 
     /**
+     * Variable used (among others) to define the ModelView matrix in the lookAt
+     * helper function if no inputHandler was specified when constructing this
+     * class.
+     * 
      * @param inputRotationY
      *            the inputRotationY to set
      */
@@ -238,6 +353,10 @@ public abstract class CommonGLEventListener implements GLEventListener {
     }
 
     /**
+     * Variable used (among others) to define the ModelView matrix in the lookAt
+     * helper function if no inputHandler was specified when constructing this
+     * class.
+     * 
      * @return the inputViewDistance
      */
     public float getInputViewDistance() {
@@ -245,6 +364,10 @@ public abstract class CommonGLEventListener implements GLEventListener {
     }
 
     /**
+     * Variable used (among others) to define the ModelView matrix in the lookAt
+     * helper function if no inputHandler was specified when constructing this
+     * class.
+     * 
      * @param inputViewDistance
      *            the inputViewDistance to set
      */

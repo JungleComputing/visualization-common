@@ -2,7 +2,7 @@ package nl.esciencecenter.visualization.openglCommon.models;
 
 import nl.esciencecenter.visualization.openglCommon.math.Color4;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
-import nl.esciencecenter.visualization.openglCommon.shaders.Program;
+import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgram;
 
 public class LightSource {
     private Color4 color;
@@ -13,7 +13,7 @@ public class LightSource {
         this.position = position;
     }
 
-    public void use(Program p) {
+    public void use(ShaderProgram p) {
         p.setUniformVector("LightColor", color);
         p.setUniformVector("LightPos", position);
     }

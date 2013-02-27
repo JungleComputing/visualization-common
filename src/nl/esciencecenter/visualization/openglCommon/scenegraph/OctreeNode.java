@@ -11,7 +11,7 @@ import nl.esciencecenter.visualization.openglCommon.math.MatrixFMath;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.models.Model;
-import nl.esciencecenter.visualization.openglCommon.shaders.Program;
+import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgram;
 import nl.esciencecenter.visualization.openglCommon.util.Settings;
 
 public class OctreeNode {
@@ -211,7 +211,7 @@ public class OctreeNode {
         }
     }
 
-    public void draw(GL3 gl, Program program, MatF4 MVMatrix)
+    public void draw(GL3 gl, ShaderProgram program, MatF4 MVMatrix)
             throws UninitializedException {
         if (initialized) {
             if (subdivided) {
@@ -234,11 +234,11 @@ public class OctreeNode {
         }
     }
 
-    protected void draw_sorted(GL3 gl, Program program, MatF4 MVMatrix) {
+    protected void draw_sorted(GL3 gl, ShaderProgram program, MatF4 MVMatrix) {
         InputHandler inputHandler = InputHandler.getInstance();
 
         try {
-            if (inputHandler.getCurrentOctant() == InputHandler.octants.NNN) {
+            if (inputHandler.getCurrentViewOctant() == InputHandler.octants.NNN) {
                 ppp.draw(gl, program, MVMatrix);
 
                 npp.draw(gl, program, MVMatrix);
@@ -250,7 +250,7 @@ public class OctreeNode {
                 npn.draw(gl, program, MVMatrix);
 
                 nnn.draw(gl, program, MVMatrix);
-            } else if (inputHandler.getCurrentOctant() == InputHandler.octants.NNP) {
+            } else if (inputHandler.getCurrentViewOctant() == InputHandler.octants.NNP) {
                 ppn.draw(gl, program, MVMatrix);
 
                 npn.draw(gl, program, MVMatrix);
@@ -262,7 +262,7 @@ public class OctreeNode {
                 npp.draw(gl, program, MVMatrix);
 
                 nnp.draw(gl, program, MVMatrix);
-            } else if (inputHandler.getCurrentOctant() == InputHandler.octants.NPN) {
+            } else if (inputHandler.getCurrentViewOctant() == InputHandler.octants.NPN) {
                 pnp.draw(gl, program, MVMatrix);
 
                 nnp.draw(gl, program, MVMatrix);
@@ -274,7 +274,7 @@ public class OctreeNode {
                 nnn.draw(gl, program, MVMatrix);
 
                 npn.draw(gl, program, MVMatrix);
-            } else if (inputHandler.getCurrentOctant() == InputHandler.octants.NPP) {
+            } else if (inputHandler.getCurrentViewOctant() == InputHandler.octants.NPP) {
                 pnn.draw(gl, program, MVMatrix);
 
                 nnn.draw(gl, program, MVMatrix);
@@ -286,7 +286,7 @@ public class OctreeNode {
                 nnp.draw(gl, program, MVMatrix);
 
                 npp.draw(gl, program, MVMatrix);
-            } else if (inputHandler.getCurrentOctant() == InputHandler.octants.PNN) {
+            } else if (inputHandler.getCurrentViewOctant() == InputHandler.octants.PNN) {
                 npp.draw(gl, program, MVMatrix);
 
                 ppp.draw(gl, program, MVMatrix);
@@ -298,7 +298,7 @@ public class OctreeNode {
                 ppn.draw(gl, program, MVMatrix);
 
                 pnn.draw(gl, program, MVMatrix);
-            } else if (inputHandler.getCurrentOctant() == InputHandler.octants.PNP) {
+            } else if (inputHandler.getCurrentViewOctant() == InputHandler.octants.PNP) {
                 npn.draw(gl, program, MVMatrix);
 
                 ppn.draw(gl, program, MVMatrix);
@@ -310,7 +310,7 @@ public class OctreeNode {
                 ppp.draw(gl, program, MVMatrix);
 
                 pnp.draw(gl, program, MVMatrix);
-            } else if (inputHandler.getCurrentOctant() == InputHandler.octants.PPN) {
+            } else if (inputHandler.getCurrentViewOctant() == InputHandler.octants.PPN) {
                 nnp.draw(gl, program, MVMatrix);
 
                 pnp.draw(gl, program, MVMatrix);
@@ -322,7 +322,7 @@ public class OctreeNode {
                 pnn.draw(gl, program, MVMatrix);
 
                 ppn.draw(gl, program, MVMatrix);
-            } else if (inputHandler.getCurrentOctant() == InputHandler.octants.PPP) {
+            } else if (inputHandler.getCurrentViewOctant() == InputHandler.octants.PPP) {
                 nnn.draw(gl, program, MVMatrix);
 
                 pnn.draw(gl, program, MVMatrix);

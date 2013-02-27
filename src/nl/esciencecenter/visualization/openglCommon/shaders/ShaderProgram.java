@@ -10,22 +10,49 @@ import java.util.Map.Entry;
 import javax.media.opengl.GL3;
 
 import nl.esciencecenter.visualization.openglCommon.datastructures.GLSLAttrib;
+import nl.esciencecenter.visualization.openglCommon.datastructures.VBO;
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
 import nl.esciencecenter.visualization.openglCommon.math.MatrixF;
 import nl.esciencecenter.visualization.openglCommon.math.VectorF;
-import nl.esciencecenter.visualization.openglCommon.shaders.FragmentShader;
-import nl.esciencecenter.visualization.openglCommon.shaders.GeometryShader;
-import nl.esciencecenter.visualization.openglCommon.shaders.Shader;
-import nl.esciencecenter.visualization.openglCommon.shaders.VertexShader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jogamp.common.nio.Buffers;
 
-public class Program {
+/**
+ * This library's interpretation of a Shader program.
+ * Different formats for shader source inclusion are possible (files, strings).
+ * Shader programs can be constructed consisting of vertex shader and fragment
+ * shader, and an optional geometry shader.
+ * 
+ * Shader Programs made with this class have an internal storage for GLSL
+ * uniform variables, and perform checks on use to see if these variables have
+ * been set by the user via the setUniform methods.
+ * 
+ * The typical/correct lifecycle of a {@link ShaderProgram} is:
+ * 
+ * <pre>
+ * <code> 
+ * 1. Create, @see {@link ShaderProgramLoader}
+ * 2. Init
+ * 
+ * while(displayCycle) { 
+ *   3. Set Uniforms
+ *   4. Link attributes / Vertex Buffer Object, @see {@link VBO}
+ *   5. Use
+ * }
+ * 
+ * 6. delete
+ * </code>
+ * </pre>
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
+public class ShaderProgram {
     private final static Logger                logger           = LoggerFactory
-                                                                        .getLogger(Program.class);
+                                                                        .getLogger(ShaderProgram.class);
 
     public int                                 pointer;
     private final VertexShader                 vs;
@@ -41,7 +68,7 @@ public class Program {
     private boolean                            geometry_enabled = false;
     private boolean                            warningsGiven    = false;
 
-    public Program(VertexShader vs, FragmentShader fs) {
+    public ShaderProgram(VertexShader vs, FragmentShader fs) {
         pointer = 0;
         this.vs = vs;
         this.fs = fs;
@@ -52,7 +79,7 @@ public class Program {
         uniformFloats = new HashMap<String, Float>();
     }
 
-    public Program(VertexShader vs, GeometryShader gs, FragmentShader fs) {
+    public ShaderProgram(VertexShader vs, GeometryShader gs, FragmentShader fs) {
         pointer = 0;
         this.vs = vs;
         this.gs = gs;

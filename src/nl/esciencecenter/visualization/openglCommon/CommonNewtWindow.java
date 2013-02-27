@@ -15,31 +15,45 @@ import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.Animator;
 
 /**
- * @author maarten
- *         Common (extendible) class for an OpenGL window.
+ * Common (extendible) class for a stand alone native supported OpenGL
+ * window.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
  * 
  */
 public abstract class CommonNewtWindow {
+    /** Screen id number to start the application on. */
     static int screenIdx = 0;
 
     /**
+     * Constructor for this class. Sets up the window and enables common
+     * features like anti-aliasing and hardware acceleration.
      * 
-     * @param forceGL3
+     * @param forceGL2ES2
+     *            Force GL2ES2 support (default on), currently Unused
      * @param inputHandler
+     *            A predefined InputHandler that is added as event handler for
+     *            input events.
      * @param glEventListener
+     *            A predefined GLEventListener that is added as event handler
+     *            for
+     *            openGL events.
      * @param width
+     *            The initial window width.
      * @param height
+     *            The initial window height.
      * @param windowTitle
+     *            The window title.
      */
-    public CommonNewtWindow(boolean forceGL3, InputHandler inputHandler,
+    public CommonNewtWindow(boolean forceGL2ES2, InputHandler inputHandler,
             GLEventListener glEventListener, int width, int height,
             String windowTitle) {
         final GLProfile glp;
-        if (forceGL3) {
-            glp = GLProfile.get(GLProfile.GL3);
-        } else {
-            glp = GLProfile.get(GLProfile.GL2ES2);
-        }
+        // if (forceGL2ES2) {
+        // glp = GLProfile.get(GLProfile.GL2ES2);
+        // } else {
+        glp = GLProfile.get(GLProfile.GL3);
+        // }
 
         // Set up the GL context
         final GLCapabilities caps = new GLCapabilities(glp);

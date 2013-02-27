@@ -20,7 +20,7 @@ import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 import nl.esciencecenter.visualization.openglCommon.models.Model;
-import nl.esciencecenter.visualization.openglCommon.shaders.Program;
+import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgram;
 
 import com.jogamp.graph.geom.Triangle;
 import com.jogamp.graph.geom.Vertex;
@@ -210,7 +210,7 @@ public class MultiColorText extends Model {
         makeVBO(gl);
     }
 
-    public void draw(GL3 gl, Program program, float canvasWidth,
+    public void draw(GL3 gl, ShaderProgram program, float canvasWidth,
             float canvasHeight, float RasterPosX, float RasterPosY) {
         if (initialized) {
             program.setUniformMatrix(

@@ -1,5 +1,12 @@
 package nl.esciencecenter.visualization.openglCommon.util;
 
+/**
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ *         A singleton pattern generic Settings File reader for use in OpenGL
+ *         applications.
+ *         Pair this with a settings.properties file in your project root.
+ * @see TypedProperties
+ */
 public class Settings {
     private boolean              STEREO_RENDERING              = true;
     private boolean              STEREO_SWITCHED               = true;
@@ -100,9 +107,7 @@ public class Settings {
             OCTREE_EDGES = props.getFloatProperty("OCTREE_EDGES");
 
             // Settings that should never change, but are listed here to make
-            // sure
-            // they
-            // can be found if necessary
+            // sure they can be found if necessary
             MAX_EXPECTED_MODELS = props.getIntProperty("MAX_EXPECTED_MODELS");
 
             SCREENSHOT_PATH = props.getProperty("SCREENSHOT_PATH");

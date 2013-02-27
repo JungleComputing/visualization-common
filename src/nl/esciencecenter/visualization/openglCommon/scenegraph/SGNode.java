@@ -10,11 +10,11 @@ import nl.esciencecenter.visualization.openglCommon.math.MatrixFMath;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.models.LightSource;
 import nl.esciencecenter.visualization.openglCommon.models.Model;
-import nl.esciencecenter.visualization.openglCommon.shaders.Program;
-import nl.esciencecenter.visualization.openglCommon.shaders.ProgramLoader;
+import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgram;
+import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgramLoader;
 
 public class SGNode {
-    protected ProgramLoader          loader;
+    protected ShaderProgramLoader          loader;
     protected MatF4                  TMatrix;
     // protected Mat4 RMatrix;
     // protected Mat4 SMatrix;
@@ -27,7 +27,7 @@ public class SGNode {
 
     private boolean                  initialized = false;
 
-    public SGNode(ProgramLoader loader) {
+    public SGNode(ShaderProgramLoader loader) {
         this.loader = loader;
 
         TMatrix = new MatF4();
@@ -88,7 +88,7 @@ public class SGNode {
         this.TMatrix = TMatrix.mul(MatrixFMath.rotationZ(rotation.get(2)));
     }
 
-    public synchronized void draw(GL3 gl, Program program, MatF4 MVMatrix)
+    public synchronized void draw(GL3 gl, ShaderProgram program, MatF4 MVMatrix)
             throws UninitializedException {
         if (!initialized) {
             throw new UninitializedException();

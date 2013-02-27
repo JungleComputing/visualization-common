@@ -7,7 +7,7 @@ import javax.media.opengl.GL3;
 import nl.esciencecenter.visualization.openglCommon.datastructures.GLSLAttrib;
 import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.datastructures.VBO;
-import nl.esciencecenter.visualization.openglCommon.shaders.Program;
+import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgram;
 
 public class Model {
     public static enum vertex_format {
@@ -73,7 +73,7 @@ public class Model {
         material = newMaterial;
     }
 
-    public void draw(GL3 gl, Program program) {
+    public void draw(GL3 gl, ShaderProgram program) {
         vbo.bind(gl);
 
         program.linkAttribs(gl, vbo.getAttribs());

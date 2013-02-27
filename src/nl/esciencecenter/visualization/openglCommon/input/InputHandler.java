@@ -26,17 +26,32 @@ public class InputHandler implements MouseListener,
         PPP, PPN, PNP, PNN, NPP, NPN, NNP, NNN
     }
 
+    /** Initial value for the rotation in the X direction */
     protected float rotationXorigin     = 0;
+    /**
+     * Final rotation in the X direction, translated to openGL units, stored to
+     * make successive rotations smooth
+     */
     protected float rotationX;
 
+    /** Initial value for the rotation in the Y direction */
     protected float rotationYorigin     = 0;
+    /**
+     * Final rotation in the Y direction, translated to openGL units, stored to
+     * make successive rotations smooth
+     */
     protected float rotationY;
 
+    /** Mouse drag start point in X direction */
     protected float dragLeftXorigin;
+    /** Mouse drag start point in Y direction */
     protected float dragLeftYorigin;
 
+    /** Final rotation in openGL units */
     public VecF3    rotation;
+    /** Final view distance (translation) in openGL units */
     public float    viewDist            = -150f;
+    /** Current direction of the view */
     private octants current_view_octant = octants.PPP;
 
     private static class SingletonHolder {
@@ -128,6 +143,12 @@ public class InputHandler implements MouseListener,
         viewDist = newViewDist;
     }
 
+    /**
+     * Setter for the current viewing 'angle' by octant.
+     * 
+     * @param rotation
+     *            The rotation from which to calculate the viewing octant.
+     */
     private void setCurrentOctant(VecF3 rotation) {
         float x = rotation.get(0);
         int qx = (int) Math.floor(x / 90f);
@@ -192,7 +213,7 @@ public class InputHandler implements MouseListener,
 
     /**
      * 
-     * @return the rotation
+     * @return the current OpenGL ModelView rotation variable
      */
     public VecF3 getRotation() {
         return rotation;
@@ -200,14 +221,14 @@ public class InputHandler implements MouseListener,
 
     /**
      * @param rotation
-     *            the rotation to set
+     *            the current OpenGL ModelView rotation variable to set
      */
     public void setRotation(VecF3 rotation) {
         this.rotation = rotation;
     }
 
     /**
-     * @return the viewDist
+     * @return the current OpenGL ModelView View distance (translation) variable
      */
     public float getViewDist() {
         return viewDist;
@@ -215,16 +236,17 @@ public class InputHandler implements MouseListener,
 
     /**
      * @param viewDist
-     *            the viewDist to set
+     *            the current OpenGL ModelView View distance (translation)
+     *            variable to set
      */
     public void setViewDist(float viewDist) {
         this.viewDist = viewDist;
     }
 
     /**
-     * @return the current_view_octant
+     * @return the current_view_octant (mainly used for octrees)
      */
-    public octants getCurrent_view_octant() {
+    public octants getCurrentViewOctant() {
         return current_view_octant;
     }
 }
