@@ -1,12 +1,26 @@
 package nl.esciencecenter.visualization.openglCommon.shaders;
 
-public class PostprocShaderCreator {
-    public PostprocShaderCreator() {
+/**
+ * Example class for shader-source string creation.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ */
+public class ShaderCreator {
+    private final int glslVersion;
 
+    /**
+     * Constructor.
+     * 
+     * @param glslVersion
+     *            the OpenGL shader language version number to be used for
+     *            shaders created by this class.
+     */
+    public ShaderCreator(int glslVersion) {
+        this.glslVersion = glslVersion;
     }
 
-    public static String generateShaderText(int rows, int columns) {
-        String shaderText = "#version 150\n\n";
+    public String generatePostProcessShader(int rows, int columns) {
+        String shaderText = "#version " + glslVersion + "\n\n";
 
         for (int i = 0; i < rows * columns; i++) {
             shaderText += "uniform sampler2D sphereTexture_" + i + ";\n";

@@ -3,7 +3,6 @@ package nl.esciencecenter.visualization.openglCommon.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
@@ -18,20 +17,20 @@ public class Sphere extends Model {
     private static float Z             = 0.850650808352039932f;
 
     static VecF3[]       vdata         = { new VecF3(-X, 0f, Z),
-            new VecF3(X, 0f, Z), new VecF3(-X, 0f, -Z), new VecF3(X, 0f, -Z),
-            new VecF3(0f, Z, X), new VecF3(0f, Z, -X), new VecF3(0f, -Z, X),
-            new VecF3(0f, -Z, -X), new VecF3(Z, X, 0f), new VecF3(-Z, X, 0f),
-            new VecF3(Z, -X, 0f), new VecF3(-Z, -X, 0f) };
+                                       new VecF3(X, 0f, Z), new VecF3(-X, 0f, -Z), new VecF3(X, 0f, -Z),
+                                       new VecF3(0f, Z, X), new VecF3(0f, Z, -X), new VecF3(0f, -Z, X),
+                                       new VecF3(0f, -Z, -X), new VecF3(Z, X, 0f), new VecF3(-Z, X, 0f),
+                                       new VecF3(Z, -X, 0f), new VecF3(-Z, -X, 0f) };
 
     static int[][]       tindices      = { { 1, 4, 0 }, { 4, 9, 0 },
-            { 4, 5, 9 }, { 8, 5, 4 }, { 1, 8, 4 }, { 1, 10, 8 }, { 10, 3, 8 },
-            { 8, 3, 5 }, { 3, 2, 5 }, { 3, 7, 2 }, { 3, 10, 7 }, { 10, 6, 7 },
-            { 6, 11, 7 }, { 6, 0, 11 }, { 6, 1, 0 }, { 10, 1, 6 },
-            { 11, 0, 9 }, { 2, 11, 9 }, { 5, 2, 9 }, { 11, 2, 7 } };
+                                       { 4, 5, 9 }, { 8, 5, 4 }, { 1, 8, 4 }, { 1, 10, 8 }, { 10, 3, 8 },
+                                       { 8, 3, 5 }, { 3, 2, 5 }, { 3, 7, 2 }, { 3, 10, 7 }, { 10, 6, 7 },
+                                       { 6, 11, 7 }, { 6, 0, 11 }, { 6, 1, 0 }, { 10, 1, 6 },
+                                       { 11, 0, 9 }, { 2, 11, 9 }, { 5, 2, 9 }, { 11, 2, 7 } };
 
-    public Sphere(Material material, int ndiv, float radius, VecF3 center,
+    public Sphere(int ndiv, float radius, VecF3 center,
             boolean texCoordsIn3D) {
-        super(material, vertex_format.TRIANGLES);
+        super(vertex_format.TRIANGLES);
         this.texCoordsIn3D = texCoordsIn3D;
 
         List<VecF3> points3List = new ArrayList<VecF3>();

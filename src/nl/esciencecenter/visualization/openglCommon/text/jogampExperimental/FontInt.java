@@ -1,4 +1,4 @@
-package nl.esciencecenter.visualization.openglCommon.text;
+package nl.esciencecenter.visualization.openglCommon.text.jogampExperimental;
 
 /**
  * Copyright 2011 JogAmp Community. All rights reserved.
@@ -28,9 +28,27 @@ package nl.esciencecenter.visualization.openglCommon.text;
  * or implied, of JogAmp Community.
  */
 
+import java.util.ArrayList;
 
-public interface FontConstructor {
-    // Font create(File file) throws IOException;
-    //
-    // Font create(URL url) throws IOException;
+import jogamp.graph.geom.plane.Path2D;
+
+import com.jogamp.graph.geom.Vertex;
+import com.jogamp.graph.geom.Vertex.Factory;
+
+public interface FontInt extends Font {
+
+    public interface Glyph extends Font.Glyph {
+        // reserved special glyph IDs
+        // http://scripts.sil.org/cms/scripts/page.php?item_id=IWS-Chapter08#ba57949e
+        public static final int ID_UNKNOWN = 0;
+        public static final int ID_CR = 2;
+        public static final int ID_SPACE = 3;
+
+        public Path2D getPath(); // unscaled path
+
+        public Path2D getPath(float pixelSize);
+    }
+
+    public ArrayList<OutlineShape> getOutlineShapes(CharSequence string,
+            float pixelSize, Factory<? extends Vertex> vertexFactory);
 }

@@ -3,12 +3,10 @@ package nl.esciencecenter.visualization.openglCommon.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 import nl.esciencecenter.visualization.openglCommon.util.Settings;
-
 
 public class GeoSphereCut extends Model {
     Settings        settings      = Settings.getInstance();
@@ -17,9 +15,9 @@ public class GeoSphereCut extends Model {
 
     private final int latRibs, lonRibs;
 
-    public GeoSphereCut(Material material, int latRibs, int lonRibs,
+    public GeoSphereCut(int latRibs, int lonRibs,
             float radius, boolean texCoordsIn3D) {
-        super(material, vertex_format.TRIANGLES);
+        super(vertex_format.TRIANGLES);
         this.texCoordsIn3D = texCoordsIn3D;
         this.latRibs = latRibs;
         this.lonRibs = lonRibs;

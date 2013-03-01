@@ -1,13 +1,12 @@
 package nl.esciencecenter.visualization.openglCommon.models;
 
-import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 
 public class Line extends Model {
-    public Line(Material material, VecF3 start, VecF3 end) {
-        super(material, vertex_format.LINES);
+    public Line(VecF3 start, VecF3 end) {
+        super(vertex_format.LINES);
 
         int numVertices = 2;
 

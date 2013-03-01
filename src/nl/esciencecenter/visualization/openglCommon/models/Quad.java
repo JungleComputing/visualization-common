@@ -1,6 +1,5 @@
 package nl.esciencecenter.visualization.openglCommon.models;
 
-import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.math.Point4;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
@@ -9,8 +8,8 @@ public class Quad extends Model {
     float width;
     float height;
 
-    public Quad(Material material, float height, float width, VecF3 center) {
-        super(material, vertex_format.TRIANGLES);
+    public Quad(float height, float width, VecF3 center) {
+        super(vertex_format.TRIANGLES);
 
         Point4[] vertices = makeVertices(height, width, center);
 

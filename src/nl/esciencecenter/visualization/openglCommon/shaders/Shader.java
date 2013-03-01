@@ -12,23 +12,44 @@ import javax.media.opengl.GL3;
 import nl.esciencecenter.visualization.openglCommon.exceptions.CompilationFailedException;
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
 
-
 import com.jogamp.common.nio.Buffers;
 
+/**
+ * Generic abstract shader class with most of the implementation specifics
+ * shared by all shaders.
+ * 
+ * Provides object-oriented interface, I/O, compilation and error
+ * checking for GLSL shaders.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ */
 public abstract class Shader {
-    String   shaderName;
-    String   filename;
+    /** The library-internal name for this shader. */
+    private final String   shaderName;
+    /** The source-file name for this shader. */
+    private final String   filename;
+    /** The source code for this shader. */
+    private final String[] source;
 
-    String[] source;
     @SuppressWarnings("rawtypes")
-    HashMap<String, Class> ins, outs, uniforms;
+    private final HashMap<String, Class> ins, outs, uniforms;
 
-    int                    shader = -1;        // This value is set by
-                                                // creating
-                                                // either a
-                                                // vertex or
-                                                // fragment shader.
+    /**
+     * The OpenGL-internal pointer of this shader, set by initializing said
+     * shader.
+     */
+    protected int                        shaderPointer = -1;
 
+    /**
+     * Constructor, reads the GLSL shader source code from file.
+     * 
+     * @param shaderName
+     *            The internal name for this shader.
+     * @param file
+     *            The file with the source code for this shader.
+     * @throws FileNotFoundException
+     *             If the file given was not found.
+     */
     @SuppressWarnings("rawtypes")
     public Shader(String shaderName, File file) throws FileNotFoundException {
         this.shaderName = shaderName;
@@ -43,18 +64,24 @@ public abstract class Shader {
         outs = new HashMap<String, Class>();
         uniforms = new HashMap<String, Class>();
 
-        // System.out.println(file.getName());
         while (scan.hasNext()) {
             String line = scan.nextLine();
             buf.append(line + "\n");
 
-            parseInputs(line);
+            parseVariables(line);
         }
-        // System.out.println();
 
         source = new String[] { buf.toString() };
     }
 
+    /**
+     * Constructor, reads the given GLSL shader source code.
+     * 
+     * @param shaderName
+     *            The internal name for this shader.
+     * @param shaderCode
+     *            The source code for this shader.
+     */
     @SuppressWarnings("rawtypes")
     public Shader(String shaderName, String shaderCode) {
         this.shaderName = shaderName;
@@ -67,25 +94,29 @@ public abstract class Shader {
         outs = new HashMap<String, Class>();
         uniforms = new HashMap<String, Class>();
 
-        // System.out.println("code source");
         while (scan.hasNext()) {
             String line = scan.nextLine();
             buf.append(line + "\n");
 
-            parseInputs(line);
+            parseVariables(line);
         }
-        // System.out.println();
 
         source = new String[] { buf.toString() };
     }
 
-    private void parseInputs(String line) {
+    /**
+     * Preparation method for Error-checking code that matches uniform variables
+     * set with the setUniform methods of the {@link ShaderProgram} class to
+     * their GLSL shader code counterparts.
+     * 
+     * @param line
+     *            The line of shader code to check.
+     */
+    private void parseVariables(String line) {
         String[] trimmedLine = line.trim().split(";");
         String[] words = trimmedLine[0].split("[\\s,;]+");
         if (words[0].compareTo("in") == 0) {
-            // String type = words[1];
             for (int i = 2; i < words.length; i++) {
-                // System.out.println("in : " + type + " : " + words[i]);
 
                 @SuppressWarnings("rawtypes")
                 Class clazz = null;
@@ -111,9 +142,7 @@ public abstract class Shader {
                 ins.put(words[i], clazz);
             }
         } else if (words[0].compareTo("out") == 0) {
-            // String type = words[1];
             for (int i = 2; i < words.length; i++) {
-                // System.out.println("in : " + type + " : " + words[i]);
 
                 @SuppressWarnings("rawtypes")
                 Class clazz = null;
@@ -139,9 +168,7 @@ public abstract class Shader {
                 outs.put(words[i], clazz);
             }
         } else if (words[0].compareTo("uniform") == 0) {
-            // String type = words[1];
             for (int i = 2; i < words.length; i++) {
-                // System.out.println("uniform : " + type + " : " + words[i]);
 
                 @SuppressWarnings("rawtypes")
                 Class clazz = null;
@@ -169,49 +196,91 @@ public abstract class Shader {
         }
     }
 
+    /**
+     * Initialization method for any shader. Compiles and checks code.
+     * 
+     * @param gl
+     *            The global openGL instance.
+     * @throws CompilationFailedException
+     *             If the compilation of the GLSL code generated any errors.
+     */
     public void init(GL3 gl) throws CompilationFailedException {
-        gl.glShaderSource(shader, 1, source, (int[]) null, 0);
-        gl.glCompileShader(shader);
+        // First, give the source to OpenGL and compile
+        gl.glShaderSource(shaderPointer, 1, source, (int[]) null, 0);
+        gl.glCompileShader(shaderPointer);
 
+        // Receive compilation status
         IntBuffer buf = Buffers.newDirectIntBuffer(1);
-        gl.glGetShaderiv(shader, GL3.GL_COMPILE_STATUS, buf);
+        gl.glGetShaderiv(shaderPointer, GL3.GL_COMPILE_STATUS, buf);
         int status = buf.get(0);
+
+        // Check the status
         if (status == GL3.GL_FALSE) {
-            gl.glGetShaderiv(shader, GL3.GL_INFO_LOG_LENGTH, buf);
+            // Prepare for additional information
+            gl.glGetShaderiv(shaderPointer, GL3.GL_INFO_LOG_LENGTH, buf);
             int logLength = buf.get(0);
             byte[] reason = new byte[logLength];
 
-            // if (logLength != 0) {
-            gl.glGetShaderInfoLog(shader, logLength, null, 0, reason, 0);
+            // Get additional information
+            gl.glGetShaderInfoLog(shaderPointer, logLength, null, 0, reason, 0);
+
             throw new CompilationFailedException("Compilation of " + filename + " failed, " + new String(reason));
-            // } else {
-            // throw new CompilationFailedException("Compilation of " + filename
-            // + " failed, No reason could be extracted.");
-            // }
         }
     }
 
-    public int getShader() throws UninitializedException {
-        if (shader == -1)
+    /**
+     * Getter for the OpenGL-internal pointer.
+     * 
+     * @return
+     *         the OpenGL-internal Pointer to this shader.
+     * @throws UninitializedException
+     *             If the shader is not initialized before this method is
+     *             called.
+     */
+    public int getShaderPointer() throws UninitializedException {
+        if (shaderPointer == -1)
             throw new UninitializedException();
-        return shader;
+        return shaderPointer;
     }
 
+    /**
+     * Get the input attribute names (and their raw types) of this shader.
+     * 
+     * @return the HashMap containing the input attribute names (and their raw
+     *         types) of this shader.
+     */
     @SuppressWarnings("rawtypes")
     public HashMap<String, Class> getIns() {
         return ins;
     }
 
+    /**
+     * Get the output attribute names (and their raw types) of this shader.
+     * 
+     * @return the HashMap containing the output attribute names (and their raw
+     *         types) of this shader.
+     */
     @SuppressWarnings("rawtypes")
     public HashMap<String, Class> getOuts() {
         return outs;
     }
 
+    /**
+     * Get the uniform names (and their raw types) of this shader.
+     * 
+     * @return the HashMap containing the uniform names (and their raw
+     *         types) of this shader.
+     */
     @SuppressWarnings("rawtypes")
     public HashMap<String, Class> getUniforms() {
         return uniforms;
     }
 
+    /**
+     * Getter for this shader's library-internal name.
+     * 
+     * @return this shader's library-internal name.
+     */
     public String getName() {
         return shaderName;
     }

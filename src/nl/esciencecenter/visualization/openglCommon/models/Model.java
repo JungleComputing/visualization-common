@@ -5,34 +5,65 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL3;
 
 import nl.esciencecenter.visualization.openglCommon.datastructures.GLSLAttrib;
-import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.datastructures.VBO;
+import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
 import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgram;
 
-public class Model {
+/**
+ * General extendible class representing a model with a {@link VBO}.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ */
+public abstract class Model {
+    /**
+     * The OpenGL-internal vertex format rules the vertexes in the VBO can
+     * follow.
+     */
     public static enum vertex_format {
         TRIANGLES, POINTS, LINES
     };
 
+    /**
+     * The OpenGL-internal vertex format rules the vertexes in the VBO are going
+     * to follow.
+     */
     protected vertex_format format;
+
+    /** The storage buffers for the standard elements of a model. */
     protected FloatBuffer   vertices, normals, texCoords;
+
+    /** The resulting {@link VBO}. */
     protected VBO           vbo;
+
+    /** The number of vertices stored in this model. */
     protected int           numVertices;
 
-    protected Material      material;
-
+    /** The state of this model. */
     private boolean         initialized = false;
 
-    public Model(Material material, vertex_format format) {
+    /**
+     * General (extensible) constructor for this class. Initializes storage to 0
+     * / null.
+     * 
+     * @param format
+     *            The {@link vertex_format} used by this model.
+     */
+    public Model(vertex_format format) {
         vertices = null;
         normals = null;
         texCoords = null;
         numVertices = 0;
-
-        this.material = material;
         this.format = format;
     }
 
+    /**
+     * Initializes the model by constructing the {@link VBO} out of the
+     * vertices,
+     * normals and texCoords buffers.
+     * 
+     * @param gl
+     *            The global openGL instance.
+     */
     public void init(GL3 gl) {
         if (!initialized) {
             GLSLAttrib vAttrib = new GLSLAttrib(vertices, "MCvertex",
@@ -47,6 +78,12 @@ public class Model {
         initialized = true;
     }
 
+    /**
+     * Deletes this model and its {@link VBO} nicely from memory.
+     * 
+     * @param gl
+     *            The global openGL instance.
+     */
     public void delete(GL3 gl) {
         vertices = null;
         normals = null;
@@ -57,20 +94,21 @@ public class Model {
         }
     }
 
-    public VBO getVBO() {
-        return vbo;
+    /**
+     * Getter method for the {@link VBO}.
+     * 
+     * @return the {@link VBO} constructed by this class.
+     */
+    public VBO getVBO() throws UninitializedException {
+        if (initialized) {
+            return vbo;
+        } else {
+            throw new UninitializedException();
+        }
     }
 
     public int getNumVertices() {
         return numVertices;
-    }
-
-    public Material getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Material newMaterial) {
-        material = newMaterial;
     }
 
     public void draw(GL3 gl, ShaderProgram program) {

@@ -1,13 +1,12 @@
 package nl.esciencecenter.visualization.openglCommon.models;
 
-import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.math.Point4;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 
 public class Rectangle extends Model {
-    public Rectangle(Material material, float height, float width, float depth, VecF3 center, boolean bottom) {
-        super(material, vertex_format.TRIANGLES);
+    public Rectangle(float height, float width, float depth, VecF3 center, boolean bottom) {
+        super(vertex_format.TRIANGLES);
         Point4[] vertices = makeVertices(height, width, depth, center);
 
         int numVertices;

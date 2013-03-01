@@ -97,11 +97,11 @@ public class ShaderProgram {
         pointer = gl.glCreateProgram();
 
         try {
-            gl.glAttachShader(pointer, vs.getShader());
+            gl.glAttachShader(pointer, vs.getShaderPointer());
             if (geometry_enabled) {
-                gl.glAttachShader(pointer, gs.getShader());
+                gl.glAttachShader(pointer, gs.getShaderPointer());
             }
-            gl.glAttachShader(pointer, fs.getShader());
+            gl.glAttachShader(pointer, fs.getShaderPointer());
         } catch (UninitializedException e) {
             System.out.println("Shaders not initialized properly");
             System.exit(0);
@@ -232,16 +232,16 @@ public class ShaderProgram {
 
     public void detachShaders(GL3 gl) {
         try {
-            gl.glDetachShader(pointer, vs.getShader());
-            gl.glDeleteShader(vs.getShader());
+            gl.glDetachShader(pointer, vs.getShaderPointer());
+            gl.glDeleteShader(vs.getShaderPointer());
 
             if (geometry_enabled) {
-                gl.glDetachShader(pointer, gs.getShader());
-                gl.glDeleteShader(gs.getShader());
+                gl.glDetachShader(pointer, gs.getShaderPointer());
+                gl.glDeleteShader(gs.getShaderPointer());
             }
 
-            gl.glDetachShader(pointer, fs.getShader());
-            gl.glDeleteShader(fs.getShader());
+            gl.glDetachShader(pointer, fs.getShaderPointer());
+            gl.glDeleteShader(fs.getShaderPointer());
 
             // Check for errors
             IntBuffer buf = Buffers.newDirectIntBuffer(1);

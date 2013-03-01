@@ -1,5 +1,7 @@
 package nl.esciencecenter.visualization.openglCommon;
 
+import java.io.IOException;
+
 import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLContext;
@@ -13,8 +15,9 @@ import nl.esciencecenter.visualization.openglCommon.math.Point4;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgramLoader;
-import nl.esciencecenter.visualization.openglCommon.text.FontFactory;
-import nl.esciencecenter.visualization.openglCommon.text.TypecastFont;
+
+import com.jogamp.graph.font.Font;
+import com.jogamp.graph.font.FontFactory;
 
 /**
  * Common (extendible) class for OpenGL event listeners, providing
@@ -55,7 +58,7 @@ public abstract class CommonGLEventListener implements GLEventListener {
     /** Ubuntu fontset is used for HUD elements */
     protected int                       fontSet = FontFactory.UBUNTU;
     /** font is used for HUD elements @see fontSet */
-    protected TypecastFont              font;
+    protected Font                      font;
 
     /**
      * This variable is used (among others) in the lookAt helper function to
@@ -87,7 +90,11 @@ public abstract class CommonGLEventListener implements GLEventListener {
      */
     public CommonGLEventListener() {
         this.loader = new ShaderProgramLoader();
-        this.font = (TypecastFont) FontFactory.get(fontSet).getDefault();
+        try {
+            this.font = FontFactory.get(fontSet).getDefault();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -99,7 +106,12 @@ public abstract class CommonGLEventListener implements GLEventListener {
      */
     public CommonGLEventListener(InputHandler inputHandler) {
         this.loader = new ShaderProgramLoader();
-        this.font = (TypecastFont) FontFactory.get(fontSet).getDefault();
+        try {
+            this.font = FontFactory.get(fontSet).getDefault();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         this.inputHandler = inputHandler;
     }
 

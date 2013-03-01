@@ -1,14 +1,13 @@
 package nl.esciencecenter.visualization.openglCommon.models;
 
-import nl.esciencecenter.visualization.openglCommon.datastructures.Material;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VecF4;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 
 public class Axis extends Model {
-    public Axis(Material material, VecF3 start, VecF3 end, float majorInterval,
+    public Axis(VecF3 start, VecF3 end, float majorInterval,
             float minorInterval) {
-        super(material, vertex_format.LINES);
+        super(vertex_format.LINES);
 
         float length = VectorFMath.length(end.sub(start));
         int numMajorIntervals = (int) Math.floor(length / majorInterval);

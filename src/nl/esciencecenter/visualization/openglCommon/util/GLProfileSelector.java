@@ -3,7 +3,7 @@ package nl.esciencecenter.visualization.openglCommon.util;
 import javax.media.opengl.GLProfile;
 
 /**
- * Holder class for GLProfile related static functions.
+ * Holder class for {@link GLProfile} related static functions.
  * 
  * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
  * 

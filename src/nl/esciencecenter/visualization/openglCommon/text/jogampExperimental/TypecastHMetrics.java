@@ -1,4 +1,4 @@
-package nl.esciencecenter.visualization.openglCommon.text;
+package nl.esciencecenter.visualization.openglCommon.text.jogampExperimental;
 
 /**
  * Copyright 2011 JogAmp Community. All rights reserved.
@@ -28,7 +28,7 @@ package nl.esciencecenter.visualization.openglCommon.text;
  * or implied, of JogAmp Community.
  */
 
-import nl.esciencecenter.visualization.openglCommon.text.Font.Metrics;
+import nl.esciencecenter.visualization.openglCommon.text.jogampExperimental.Font.Metrics;
 import jogamp.graph.font.typecast.ot.table.HeadTable;
 import jogamp.graph.font.typecast.ot.table.HheaTable;
 

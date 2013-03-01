@@ -1,4 +1,4 @@
-package nl.esciencecenter.visualization.openglCommon.text;
+package nl.esciencecenter.visualization.openglCommon.text.jogampExperimental;
 
 /**
  * Copyright 2010 JogAmp Community. All rights reserved.

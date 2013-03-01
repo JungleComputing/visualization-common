@@ -1,10 +1,11 @@
 package nl.esciencecenter.visualization.openglCommon.util;
 
 /**
+ * A singleton pattern generic Settings File reader for use in OpenGL
+ * applications.
+ * Pair this with a settings.properties file in your project root.
+ * 
  * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
- *         A singleton pattern generic Settings File reader for use in OpenGL
- *         applications.
- *         Pair this with a settings.properties file in your project root.
  * @see TypedProperties
  */
 public class Settings {
