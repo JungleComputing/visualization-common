@@ -1,27 +1,41 @@
 package nl.esciencecenter.visualization.openglCommon.textures;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 import javax.media.opengl.GL3;
 
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
 
 import com.jogamp.common.nio.Buffers;
 
-public class Texture3D extends Texture {
-    protected IntBuffer  pointer;
-    protected ByteBuffer pixelBuffer;
+/**
+ * 3-Dimensional {@link Texture} object representation. Provides some generic
+ * methods and variables for all types of 3-Dimensional textures.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
+public abstract class Texture3D extends Texture {
 
-    protected int        width, height, depth;
-
-    protected boolean    initialized = false;
-
+    /**
+     * Generic constructor, should be called by all classes extending this class
+     * to set the glMultitexUnit.
+     * Do not forget to call {@link #init(javax.media.opengl.GL3)} before use.
+     * 
+     * @param glMultiTexUnit
+     *            The OpenGL-internal MultitexUnit (GL.GL_TEXTUREX) this texture
+     *            uses.
+     */
     public Texture3D(int glMultiTexUnit) {
         super(glMultiTexUnit);
-        pointer = null;
     }
 
+    /**
+     * Initialization method generic for all 3-D Textures. Allocates space on
+     * the device and copies data from the pixelBuffer into it. Therefore,
+     * pixelBuffer cannot be null, or an error will be generated.
+     * 
+     * @param gl
+     *            The current OpenGL instance.
+     */
     public void init(GL3 gl) {
         if (!initialized) {
             if (pixelBuffer == null || width == 0 || height == 0 || depth == 0) {
@@ -64,26 +78,6 @@ public class Texture3D extends Texture {
         }
     }
 
-    public ByteBuffer getPixelBuffer() {
-        return pixelBuffer;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getDepth() {
-        return depth;
-    }
-
-    public void delete(GL3 gl) {
-        gl.glDeleteTextures(1, pointer);
-    }
-
     public void use(GL3 gl) throws UninitializedException {
         if (!initialized) {
             init(gl);
@@ -92,11 +86,5 @@ public class Texture3D extends Texture {
         gl.glActiveTexture(glMultiTexUnit);
         gl.glEnable(GL3.GL_TEXTURE_3D);
         gl.glBindTexture(GL3.GL_TEXTURE_3D, getPointer());
-    }
-
-    public int getPointer() throws UninitializedException {
-        if (pointer == null)
-            throw new UninitializedException();
-        return pointer.get(0);
     }
 }

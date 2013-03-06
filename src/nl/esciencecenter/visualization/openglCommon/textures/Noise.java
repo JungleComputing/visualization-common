@@ -6,6 +6,14 @@ import nl.esciencecenter.visualization.openglCommon.noise.ImprovedPerlinNoise;
 
 import com.jogamp.common.nio.Buffers;
 
+/**
+ * Noise creation class for visual effects. Didn't write this as much as
+ * scrounged it together from various internet sources. Typical useage is
+ * demonstrated in the {@link Perlin3D} class.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
 public class Noise {
     public ByteBuffer pixelBuffer;
 
@@ -14,7 +22,7 @@ public class Noise {
         pixelBuffer = Buffers.newDirectByteBuffer(pixels * 4);
 
         for (int x = 0; x < width; x++) {
-            System.out.print(".");
+            // System.out.print(".");
             for (int y = 0; y < height; y++) {
                 for (int z = 0; z < depth; z++) {
                     PerlinNoise_3D(channels, x, y, z);

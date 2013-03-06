@@ -1,12 +1,34 @@
 package nl.esciencecenter.visualization.openglCommon.textures;
 
-
 import javax.media.opengl.GL3;
+
+import nl.esciencecenter.visualization.openglCommon.datastructures.RenderBuffer;
 
 import com.jogamp.common.nio.Buffers;
 
+/**
+ * Generic wrapper for a {@link Texture} for use as a {@link RenderBuffer}
+ * Object. Does not allocate memory for a ByteBuffer, since it is not needed.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
 public class RBOTexture extends Texture2D {
 
+    /**
+     * Default constructor, use this in combination with {@link RenderBuffer}.
+     * Do not forget to call {@link #init(javax.media.opengl.GL3)} before use.
+     * 
+     * @param glMultitexUnit
+     *            The OpenGL-internal MultitexUnit (GL.GL_TEXTUREX) this texture
+     *            uses.
+     * @param width
+     *            The width of this texture. Generally the same size as the
+     *            canvas width.
+     * @param height
+     *            The height of this texture. Generally the same size as the
+     *            canvas height.
+     */
     public RBOTexture(int width, int height, int glMultiTexUnit) {
         super(glMultiTexUnit);
         this.height = height;

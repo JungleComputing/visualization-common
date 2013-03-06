@@ -44,18 +44,21 @@ public class Axis extends Model {
 
         VecF3 nil = new VecF3();
 
+        float majorIntervalSize = length / 100f;
+        float minorIntervalSize = length / 300f;
+
         for (int i = 1; i < numMajorIntervals / 2; i++) {
             arrayindex = addInterval(points, normals, tCoords, arrayindex,
-                    nil.add(vec.mul(majorInterval * i)), perpendicular, 2f);
+                    nil.add(vec.mul(majorInterval * i)), perpendicular, majorIntervalSize);
             arrayindex = addInterval(points, normals, tCoords, arrayindex,
-                    nil.sub(vec.mul(majorInterval * i)), perpendicular, 2f);
+                    nil.sub(vec.mul(majorInterval * i)), perpendicular, majorIntervalSize);
         }
 
         for (int i = 1; i < numMinorIntervals / 2; i++) {
             arrayindex = addInterval(points, normals, tCoords, arrayindex,
-                    nil.add(vec.mul(minorInterval * i)), perpendicular, .5f);
+                    nil.add(vec.mul(minorInterval * i)), perpendicular, minorIntervalSize);
             arrayindex = addInterval(points, normals, tCoords, arrayindex,
-                    nil.sub(vec.mul(minorInterval * i)), perpendicular, .5f);
+                    nil.sub(vec.mul(minorInterval * i)), perpendicular, minorIntervalSize);
 
         }
 

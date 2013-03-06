@@ -4,6 +4,7 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL3;
 
+import nl.esciencecenter.visualization.openglCommon.CommonGLEventListener;
 import nl.esciencecenter.visualization.openglCommon.datastructures.GLSLAttrib;
 import nl.esciencecenter.visualization.openglCommon.datastructures.VBO;
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
@@ -107,10 +108,25 @@ public abstract class Model {
         }
     }
 
+    /**
+     * Getter method for the number of vertices represented by this Model and
+     * stored in its {@link CommonGLEventListener}
+     * 
+     * @return The number of vertices.
+     */
     public int getNumVertices() {
         return numVertices;
     }
 
+    /**
+     * Draw method for this model. Links its VBO attributes and calls OpenGL
+     * DrawArrays.
+     * 
+     * @param gl
+     *            The global openGL instance.
+     * @param program
+     *            The shader program to be used for this drawing instance.
+     */
     public void draw(GL3 gl, ShaderProgram program) {
         vbo.bind(gl);
 

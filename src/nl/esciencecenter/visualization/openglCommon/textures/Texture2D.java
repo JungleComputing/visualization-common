@@ -1,27 +1,41 @@
 package nl.esciencecenter.visualization.openglCommon.textures;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 import javax.media.opengl.GL3;
 
 import nl.esciencecenter.visualization.openglCommon.exceptions.UninitializedException;
-import nl.esciencecenter.visualization.openglCommon.textures.Texture;
 
 import com.jogamp.common.nio.Buffers;
 
-public class Texture2D extends Texture {
+/**
+ * 2-Dimensional {@link Texture} object representation. Provides some generic
+ * methods and variables for all types of 2-Dimensional textures.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
+public abstract class Texture2D extends Texture {
 
-    protected ByteBuffer pixelBuffer;
-    protected int        width, height;
-    protected IntBuffer  pointer;
-
-    protected boolean    initialized = false;
-
+    /**
+     * Generic constructor, should be called by all classes extending this class
+     * to set the glMultitexUnit.
+     * Do not forget to call {@link #init(javax.media.opengl.GL3)} before use.
+     * 
+     * @param glMultitexUnit
+     *            The OpenGL-internal MultitexUnit (GL.GL_TEXTUREX) this texture
+     *            uses.
+     */
     public Texture2D(int glMultitexUnit) {
         super(glMultitexUnit);
     }
 
+    /**
+     * Initialization method generic for all 2-D Textures. Allocates space on
+     * the device and copies data from the pixelBuffer into it. Therefore,
+     * pixelBuffer cannot be null, or an error will be generated.
+     * 
+     * @param gl
+     *            The current OpenGL instance.
+     */
     public void init(GL3 gl) {
         if (!initialized) {
             if (pixelBuffer == null) {
@@ -29,7 +43,7 @@ public class Texture2D extends Texture {
                         .println("Add a pixelbuffer first, by using a custom constructor. The Texture2D constructor is only meant to be extended.");
             }
 
-            // Tell OpenGL we want to use textures
+            // Tell OpenGL we want to use 2D textures
             gl.glEnable(GL3.GL_TEXTURE_2D);
             gl.glActiveTexture(this.glMultiTexUnit);
 
@@ -65,10 +79,6 @@ public class Texture2D extends Texture {
         }
     }
 
-    public void delete(GL3 gl) {
-        gl.glDeleteTextures(1, pointer);
-    }
-
     public void use(GL3 gl) throws UninitializedException {
         if (!initialized) {
             init(gl);
@@ -83,30 +93,12 @@ public class Texture2D extends Texture {
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
     }
 
-    public ByteBuffer getPixelBuffer() {
-        return pixelBuffer;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public Texture2D copy(GL3 gl, int glMultitexUnit) {
-        Texture2D result = new Texture2D(glMultitexUnit);
-        result.pixelBuffer = pixelBuffer.duplicate();
-        result.init(gl);
-
-        return result;
-    }
-
-    public int getPointer() throws UninitializedException {
-        if (pointer == null)
-            throw new UninitializedException();
-        return pointer.get(0);
-    }
+    // public Texture2D copy(GL3 gl, int glMultitexUnit) {
+    // Texture2D result = new Texture2D(glMultitexUnit);
+    // result.pixelBuffer = pixelBuffer.duplicate();
+    // result.init(gl);
+    //
+    // return result;
+    // }
 
 }

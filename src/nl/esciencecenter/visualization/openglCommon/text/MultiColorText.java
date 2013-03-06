@@ -21,6 +21,7 @@ import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 import nl.esciencecenter.visualization.openglCommon.models.BoundingBox;
 import nl.esciencecenter.visualization.openglCommon.models.Model;
 import nl.esciencecenter.visualization.openglCommon.shaders.ShaderProgram;
+import nl.esciencecenter.visualization.openglCommon.text.jogampExperimental.Font;
 import nl.esciencecenter.visualization.openglCommon.text.jogampExperimental.GlyphShape;
 import nl.esciencecenter.visualization.openglCommon.text.jogampExperimental.OutlineShape;
 import nl.esciencecenter.visualization.openglCommon.text.jogampExperimental.TypecastFont;
@@ -74,7 +75,7 @@ public class MultiColorText extends Model {
     private Color4                             cachedColor;
 
     /** The desired font for this text model */
-    private final TypecastFont                 font;
+    private final Font                         font;
 
     /**
      * Constructor, doesn't actually do any work, only prepares storage.
@@ -82,7 +83,7 @@ public class MultiColorText extends Model {
      * @param font
      *            The font for this text model.
      */
-    public MultiColorText(TypecastFont font) {
+    public MultiColorText(Font font) {
         super(vertex_format.TRIANGLES);
 
         this.font = font;
@@ -128,7 +129,7 @@ public class MultiColorText extends Model {
             glyphs.clear();
 
             // Get the outline shapes for the current string in this font
-            ArrayList<OutlineShape> shapes = font.getOutlineShapes(str,
+            ArrayList<OutlineShape> shapes = ((TypecastFont) font).getOutlineShapes(str,
                     size, SVertex.factory());
 
             // Make a set of glyph shapes from the outlines

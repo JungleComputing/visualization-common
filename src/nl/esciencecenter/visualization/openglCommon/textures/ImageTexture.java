@@ -9,11 +9,31 @@ import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
+/**
+ * Generic wrapper for a {@link Texture} read out of an image file.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ */
 public class ImageTexture extends Texture2D {
+    /**
+     * Constructor for this Texture. Reads the file designated by fileName.
+     * Do not forget to call {@link #init(javax.media.opengl.GL3)} before use.
+     * 
+     * @param filename
+     *            The image file to be read.
+     * @param w_offSet
+     *            Optional width offset in the image file.
+     * @param h_offSet
+     *            Optional height offset in the image file.
+     * @param glMultiTexUnit
+     *            The OpenGL-internal MultitexUnit (GL.GL_TEXTUREX) this texture
+     *            uses.
+     */
     public ImageTexture(String filename, int w_offSet, int h_offSet,
             int glMultiTexUnit) {
         super(glMultiTexUnit);
 
+        // Read the file
         BufferedImage bi = null;
         try {
             bi = ImageIO.read(new FileInputStream(filename));
@@ -28,6 +48,7 @@ public class ImageTexture extends Texture2D {
         this.width = width;
         this.height = height;
 
+        // Grab pixels
         int[] pixels = new int[width * height];
         PixelGrabber pg = new PixelGrabber(bi, x, y, width, height, pixels, 0,
                 width);
@@ -38,6 +59,7 @@ public class ImageTexture extends Texture2D {
             return;
         }
 
+        // Allocate ByteBuffer and fill it with pixel data.
         ByteBuffer tempBuffer = ByteBuffer.allocate(width * height * 4);
 
         for (int row = (height + h_offSet) - 1; row >= h_offSet; row--) {

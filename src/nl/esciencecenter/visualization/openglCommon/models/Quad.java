@@ -4,10 +4,28 @@ import nl.esciencecenter.visualization.openglCommon.math.Point4;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 
+/**
+ * A simpel quad (square) {@link Model}.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ */
 public class Quad extends Model {
-    float width;
-    float height;
+    /** width for this quad */
+    private float width;
+    /** height for this quad */
+    private float height;
 
+    /**
+     * Simple constructor. Do not forget to call the
+     * {@link #init(javax.media.opengl.GL3)} function before use.
+     * 
+     * @param height
+     *            This quad's height.
+     * @param width
+     *            This quad's width.
+     * @param center
+     *            The center location of this quad.
+     */
     public Quad(float height, float width, VecF3 center) {
         super(vertex_format.TRIANGLES);
 
@@ -32,6 +50,18 @@ public class Quad extends Model {
         this.texCoords = VectorFMath.toBuffer(tCoords);
     }
 
+    /**
+     * Generate the individual vertices needed for the construction of this
+     * Model, based on the given specifications.
+     * 
+     * @param height
+     *            The height of this Model.
+     * @param width
+     *            The width of this Model.
+     * @param center
+     *            The center location for this Model.
+     * @return The points(vertices) that make up the composition of this Model.
+     */
     private Point4[] makeVertices(float height, float width, VecF3 center) {
         float x = center.get(0);
         float y = center.get(1);
@@ -49,6 +79,25 @@ public class Quad extends Model {
         return result;
     }
 
+    /**
+     * Generate the individial attributes for this model.
+     * 
+     * @param points
+     *            OUTPUT parameter. Make sure to allocate enough space
+     *            beforehand.
+     * @param arrayindex
+     *            OUTPUT parameter.
+     * @param source
+     *            INPUT parameter,
+     * @param tCoords
+     *            OUTPUT parameter. Make sure to allocate enough space
+     *            beforehand.
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     * @return
+     */
     private int newQuad(Point4[] points, int arrayindex, Point4[] source,
             VecF3[] tCoords, int a, int b, int c, int d) {
         points[arrayindex] = source[a];

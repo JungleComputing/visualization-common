@@ -1,8 +1,28 @@
 package nl.esciencecenter.visualization.openglCommon.textures;
 
+/**
+ * 3-Dimensional Perlin Noise Texture.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
 public class Perlin3D extends Texture3D {
-    public int size;
 
+    /**
+     * Generates a 3D blob of Perlin Noise.
+     * 
+     * Do not forget to call {@link #init(javax.media.opengl.GL3)} before use.
+     * 
+     * @param glMultitexUnit
+     *            The OpenGL-internal MultitexUnit (GL.GL_TEXTUREX) this texture
+     *            uses.
+     * @param width
+     *            The width of this texture.
+     * @param height
+     *            The height of this texture.
+     * @param depth
+     *            The depth of this texture.
+     */
     public Perlin3D(int gLMultiTexUnit, int width, int height, int depth) {
         super(gLMultiTexUnit);
 
@@ -10,13 +30,9 @@ public class Perlin3D extends Texture3D {
         this.height = height;
         this.depth = depth;
 
-        makePerlin3d(width, height, depth);
-    }
-
-    private void makePerlin3d(int width, int height, int depth) {
-        System.out.print("Generating noise");
+        // System.out.print("Generating noise");
         Noise n = new Noise(4, width, height, depth);
-        System.out.println("done");
+        // System.out.println("done");
 
         pixelBuffer = n.pixelBuffer;
     }

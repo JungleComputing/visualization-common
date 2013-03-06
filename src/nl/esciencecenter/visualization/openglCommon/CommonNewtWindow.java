@@ -21,7 +21,7 @@ import com.jogamp.opengl.util.Animator;
  * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
  * 
  */
-public abstract class CommonNewtWindow {
+public class CommonNewtWindow {
     /** Screen id number to start the application on. */
     static int screenIdx = 0;
 
