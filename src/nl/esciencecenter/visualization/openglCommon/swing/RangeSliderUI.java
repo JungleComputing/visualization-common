@@ -43,11 +43,14 @@ public class RangeSliderUI extends BasicSliderUI {
     /**
      * Constructs a RangeSliderUI for the specified slider component.
      * 
-     * @param b
+     * @param slider
      *            RangeSlider
+     * @param colorMap
+     *            The name of the colorMap, to be interpreted by
+     *            {@link ColormapInterpreter}
      */
-    public RangeSliderUI(RangeSlider b, String colorMap) {
-        super(b);
+    public RangeSliderUI(RangeSlider slider, String colorMap) {
+        super(slider);
 
         this.rangeColorMap = colorMap;
     }
@@ -151,6 +154,13 @@ public class RangeSliderUI extends BasicSliderUI {
         return new Dimension(12, 12);
     }
 
+    /**
+     * Setter to apply a Colormap as background for this {@link RangeSlider}
+     * 
+     * @param colorMap
+     *            The name of the colorMap, to be interpreted by
+     *            {@link ColormapInterpreter}
+     */
     public void setRangeColorMap(String colorMap) {
         this.rangeColorMap = colorMap;
     }

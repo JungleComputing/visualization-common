@@ -4,21 +4,21 @@ package nl.esciencecenter.visualization.openglCommon.swing;
 
 /*
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * -Redistribution of source code must retain the above copyright notice, this
- *  list of conditions and the following disclaimer.
- *
+ * list of conditions and the following disclaimer.
+ * 
  * -Redistribution in binary form must reproduce the above copyright notice,
- *  this list of conditions and the following disclaimer in the documentation
- *  and/or other materials provided with the distribution.
- *
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * 
  * Neither the name of Sun Microsystems, Inc. or the names of contributors may
  * be used to endorse or promote products derived from this software without
  * specific prior written permission.
- *
+ * 
  * This software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING
  * ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
@@ -30,7 +30,7 @@ package nl.esciencecenter.visualization.openglCommon.swing;
  * INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY
  * OF LIABILITY, ARISING OUT OF THE USE OF OR INABILITY TO USE THIS SOFTWARE,
  * EVEN IF SUN HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- *
+ * 
  * You acknowledge that this software is not designed, licensed or intended
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
@@ -44,6 +44,12 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+/**
+ * Modifier version of the ListCellRenderer that allows for an image to be used.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
 public class ImageComboBoxRenderer extends JLabel implements ListCellRenderer {
     private static final long serialVersionUID = -6243517743093061609L;
 
@@ -52,6 +58,15 @@ public class ImageComboBoxRenderer extends JLabel implements ListCellRenderer {
     private final String[]    descriptions;
     private final ImageIcon[] images;
 
+    /**
+     * Default constructor, sets alignment.
+     * 
+     * @param descriptions
+     *            The descriptions of the list elements. These are only used if
+     *            images were not found.
+     * @param images
+     *            The images to use for the list elements.
+     */
     public ImageComboBoxRenderer(String[] descriptions, ImageIcon[] images) {
         setOpaque(true);
         setHorizontalAlignment(CENTER);
@@ -94,7 +109,14 @@ public class ImageComboBoxRenderer extends JLabel implements ListCellRenderer {
         return this;
     }
 
-    // Set the font and text when no image was found.
+    /**
+     * Set the font and text when no image was found.
+     * 
+     * @param description
+     *            The description to use.
+     * @param normalFont
+     *            The font to use for this description.
+     */
     protected void setDescription(String description, Font normalFont) {
         if (descriptionFont == null) { // lazily create this font
             descriptionFont = normalFont.deriveFont(Font.ITALIC);

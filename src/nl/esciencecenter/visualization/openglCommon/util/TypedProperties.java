@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 /**
  * Utility to extract and check typed properties.
+ * 
+ * @author Niels Drost <n.drost@esciencecenter.nl>
  */
 public class TypedProperties extends Properties {
 
