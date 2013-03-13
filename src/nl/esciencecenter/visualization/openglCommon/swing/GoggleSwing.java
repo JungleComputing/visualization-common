@@ -1,5 +1,6 @@
 package nl.esciencecenter.visualization.openglCommon.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for various Swing components, to use in GUIs.
+ * Utility class for various static Swing components, for use in GUIs.
  * 
  * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
  * 
@@ -99,16 +100,50 @@ public class GoggleSwing {
      */
     public static class ColoredCheckBoxItem {
         public String       label;
-        public Float[]      color;
+        public Color        color;
         public boolean      selection;
         public ItemListener listener;
 
-        public ColoredCheckBoxItem(String label, Float[] color, boolean selection,
+        public ColoredCheckBoxItem(String label, Color color, boolean selection,
                 ItemListener listener) {
             this.label = label;
             this.color = color;
             this.selection = selection;
             this.listener = listener;
+        }
+    }
+
+    /**
+     * A single item for a DropdownBox, to be used in conjuction with
+     * GoggleSwing.dropdownBox()
+     * 
+     * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+     */
+    public static class DropdownBoxItem {
+        public String         label;
+        public ActionListener listener;
+
+        public DropdownBoxItem(String itemLabel, ActionListener listener) {
+            this.label = itemLabel;
+            this.listener = listener;
+        }
+    }
+
+    /**
+     * A single item for a DropdownBox, to be used in conjuction with
+     * GoggleSwing.dropdownBox()
+     * 
+     * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+     */
+    public static class DropdownBoxesBoxItem {
+        public String            label;
+        public String            selectedOption;
+        public DropdownBoxItem[] items;
+
+        public DropdownBoxesBoxItem(String boxLabel, String selectedOption, DropdownBoxItem... items) {
+            this.label = boxLabel;
+            this.selectedOption = selectedOption;
+            this.items = items;
         }
     }
 
@@ -313,7 +348,7 @@ public class GoggleSwing {
             btn.addItemListener(item.listener);
             hcomponents.add(btn);
 
-            final JCheckBox icon = new JCheckBox(new ColorIcon(item.color));
+            final JCheckBox icon = new JCheckBox(new ColorIcon(10, 10, item.color));
             hcomponents.add(icon);
 
             final JLabel label = new JLabel(item.label);
@@ -333,7 +368,7 @@ public class GoggleSwing {
      * @param selectedOption
      *            The label that is initially selected.
      * @param items
-     *            One or more {@link RadioBoxItem}s to put into this box.
+     *            One or more {@link DropdownBoxItem}s to put into this box.
      * @return the {@link Box} containing the checkboxes.
      */
     public static Box radioBox(String name, String selectedOption, RadioBoxItem... items) {
@@ -355,20 +390,35 @@ public class GoggleSwing {
         return GoggleSwing.vBoxedComponents(vcomponents, true);
     }
 
-    public static Box dropdownBoxesBox(String name, String[] boxLabels,
-            String[] optionLabels, ActionListener[][] actions,
-            String selectedOption) {
+    /**
+     * Creates a horizontally boxed dropdownboxes list.
+     * 
+     * @param name
+     *            The name (and label) for this box.
+     * @param boxItems
+     *            One or more {@link DropdownBoxesBoxItem}s to put into this
+     *            box.
+     * @return the {@link Box} containing the horizontally boxed dropdownboxes.
+     */
+    public static Box horizontalDropdownBoxesBox(String name, DropdownBoxesBoxItem... boxItems) {
         final ArrayList<Component> vcomponents = new ArrayList<Component>();
         vcomponents.add(new JLabel(name));
         vcomponents.add(Box.createHorizontalGlue());
 
         final ArrayList<Component> hcomponents = new ArrayList<Component>();
 
-        for (int i = 0; i < boxLabels.length; i++) {
+        for (DropdownBoxesBoxItem boxItem : boxItems) {
             JComboBox comboBox = new JComboBox();
-            for (int j = 0; j < optionLabels.length; j++) {
-                comboBox.addItem(optionLabels[j]);
-                comboBox.addActionListener(actions[i][j]);
+            int index = 0;
+            for (DropdownBoxItem optionItem : boxItem.items) {
+                comboBox.addItem(optionItem.label);
+                comboBox.addActionListener(optionItem.listener);
+
+                if (optionItem.label.compareTo(boxItem.selectedOption) == 0) {
+                    comboBox.setSelectedIndex(index);
+                }
+
+                index++;
             }
 
             hcomponents.add(comboBox);
@@ -378,6 +428,25 @@ public class GoggleSwing {
         return GoggleSwing.vBoxedComponents(vcomponents, true);
     }
 
+    /**
+     * A box containing a single horizontal slider with Integer values.
+     * 
+     * @param label
+     *            The name and label of this box.
+     * @param listener
+     *            The listener to be associated with the slider.
+     * @param min
+     *            The minimum value on the slider.
+     * @param max
+     *            The maximum value on the slider.
+     * @param spacing
+     *            The spacing of the ticks on the slider.
+     * @param norm
+     *            The initial setting for the slider.
+     * @param dynamicLabel
+     *            The {@link JLabel} to set when the slider value changes.
+     * @return the {@link Box} containing the slider.
+     */
     public static Box sliderBox(String label, ChangeListener listener, int min,
             int max, int spacing, int norm, JLabel dynamicLabel) {
         final ArrayList<Component> components = new ArrayList<Component>();
@@ -399,6 +468,25 @@ public class GoggleSwing {
         return GoggleSwing.vBoxedComponents(components, true);
     }
 
+    /**
+     * A box containing a single horizontal slider with Float values.
+     * 
+     * @param label
+     *            The name and label of this box.
+     * @param listener
+     *            The listener to be associated with the slider.
+     * @param fmin
+     *            The minimum value on the slider.
+     * @param fmax
+     *            The maximum value on the slider.
+     * @param fspacing
+     *            The spacing of the ticks on the slider.
+     * @param fnorm
+     *            The initial setting for the slider.
+     * @param dynamicLabel
+     *            The {@link JLabel} to set when the slider value changes.
+     * @return the {@link Box} containing the slider.
+     */
     public static Box sliderBox(String label, ChangeListener listener,
             float fmin, float fmax, float fspacing, float fnorm,
             JLabel dynamicLabel) {
@@ -429,6 +517,15 @@ public class GoggleSwing {
         return GoggleSwing.vBoxedComponents(components, true);
     }
 
+    /**
+     * A box used for titles of option panels. Also contains a close button.
+     * 
+     * @param label
+     *            The text to be displayed as title.
+     * @param listener
+     *            the Itemlistener for the close button.
+     * @return The title {@link Box}.
+     */
     public static Box titleBox(String label, ItemListener listener) {
         final ArrayList<Component> vcomponents = new ArrayList<Component>();
 
@@ -442,7 +539,7 @@ public class GoggleSwing {
 
         hrzInnerBox.add(Box.createHorizontalGlue());
 
-        final Icon exitIcon = new ColorIcon(0, 0, 0);
+        final Icon exitIcon = new ColorIcon(10, 10, new Color(0, 0, 0));
         final JCheckBox exit = new JCheckBox(exitIcon);
         exit.addItemListener(listener);
         hrzInnerBox.add(exit);
@@ -456,6 +553,15 @@ public class GoggleSwing {
         return GoggleSwing.vBoxedComponents(vcomponents, false);
     }
 
+    /**
+     * A helper method to vertically {@link Box} several components.
+     * 
+     * @param components
+     *            the components to be boxed.
+     * @param bordered
+     *            option to have a bevel border yes/no.
+     * @return the vertically boxed components.
+     */
     public static Box vBoxedComponents(ArrayList<Component> components,
             boolean bordered) {
         final Box hrzBox = Box.createHorizontalBox();
@@ -465,22 +571,27 @@ public class GoggleSwing {
         if (bordered) {
             vrtBox.setBorder(new BevelBorder(BevelBorder.RAISED));
         }
-        // vrtBox.setAlignmentY(Component.TOP_ALIGNMENT);
 
         vrtBox.add(GoggleSwing.verticalStrut(5));
 
         for (Component current : components) {
             vrtBox.add(current);
-            // vrtBox.add(Box.createVerticalGlue());
         }
         hrzBox.add(vrtBox);
-
-        // hrzBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         hrzBox.add(GoggleSwing.horizontalStrut(2));
         return hrzBox;
     }
 
+    /**
+     * A helper method to horizontally {@link Box} several components.
+     * 
+     * @param components
+     *            the components to be boxed.
+     * @param bordered
+     *            option to have a bevel border yes/no.
+     * @return the horizontally boxed components.
+     */
     public static Box hBoxedComponents(ArrayList<Component> components,
             boolean bordered) {
         final Box vrtBox = Box.createVerticalBox();
@@ -490,17 +601,13 @@ public class GoggleSwing {
         if (bordered) {
             hrzBox.setBorder(new BevelBorder(BevelBorder.RAISED));
         }
-        // hrzBox.setAlignmentY(Component.LEFT_ALIGNMENT);
 
         hrzBox.add(GoggleSwing.horizontalStrut(5));
 
         for (Component current : components) {
             hrzBox.add(current);
-            // hrzBox.add(Box.createHorizontalGlue());
         }
         vrtBox.add(hrzBox);
-
-        // vrtBox.setAlignmentX(Component.TOP_ALIGNMENT);
 
         vrtBox.add(GoggleSwing.verticalStrut(2));
         return vrtBox;
@@ -517,8 +624,5 @@ public class GoggleSwing {
         final Component verticalStrut = Box.createRigidArea(new Dimension(0,
                 size));
         return verticalStrut;
-    }
-
-    public GoggleSwing() {
     }
 }

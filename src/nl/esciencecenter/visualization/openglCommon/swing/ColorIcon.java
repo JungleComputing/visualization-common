@@ -1,49 +1,67 @@
 package nl.esciencecenter.visualization.openglCommon.swing;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 import javax.swing.ImageIcon;
 
+/**
+ * A single-color-filled {@link ImageIcon}
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
 public class ColorIcon extends ImageIcon {
     private static final long serialVersionUID = 152208824875341752L;
 
-    private static final int  WIDTH            = 10;
-    private static final int  HEIGHT           = 10;
+    private BufferedImage     image;
+    private final int         width, height;
 
-    BufferedImage             image;
-
-    public ColorIcon(Float[] color) {
+    /**
+     * Constructor for this colored rectangle.
+     * 
+     * @param width
+     *            the width of this colored rectangle.
+     * @param height
+     *            the height of this colored rectangle.
+     * @param color
+     *            the color of this colored rectangle.
+     */
+    public ColorIcon(int width, int height, Color color) {
         super();
+
+        this.width = width;
+        this.height = height;
 
         makeImage(color);
     }
 
-    public ColorIcon(int i, int j, int k) {
-        super();
+    /**
+     * Utility method to make a {@link BufferedImage} square with color filled
+     * interior. sets the {@link ImageIcon}'s intenal image field.
+     * 
+     * @param color
+     *            the color.
+     */
+    private void makeImage(Color color) {
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-        final Float[] color = { (float) i, (float) j, (float) k };
-        makeImage(color);
-    }
-
-    private void makeImage(Float[] color) {
-        image = new BufferedImage(ColorIcon.WIDTH, ColorIcon.HEIGHT, BufferedImage.TYPE_INT_ARGB);
-
-        final ByteBuffer outBuf = ByteBuffer.allocate(ColorIcon.WIDTH * ColorIcon.HEIGHT * 4);
+        final ByteBuffer outBuf = ByteBuffer.allocate(width * height * 4);
         outBuf.clear();
 
-        for (int i = 0; i < (ColorIcon.WIDTH * ColorIcon.HEIGHT); i++) {
+        for (int i = 0; i < (width * height); i++) {
             outBuf.put((byte) 0xFF);
-            outBuf.put((byte) (color[0] * 255));
-            outBuf.put((byte) (color[1] * 255));
-            outBuf.put((byte) (color[2] * 255));
+            outBuf.put((byte) (color.getRed()));
+            outBuf.put((byte) (color.getGreen()));
+            outBuf.put((byte) (color.getBlue()));
         }
 
         outBuf.rewind();
 
-        final int[] tmp = new int[ColorIcon.WIDTH * ColorIcon.HEIGHT];
+        final int[] tmp = new int[width * height];
         outBuf.asIntBuffer().get(tmp);
-        image.setRGB(0, 0, ColorIcon.WIDTH, ColorIcon.HEIGHT, tmp, 0, 1);
+        image.setRGB(0, 0, width, height, tmp, 0, 1);
 
         setImage(image);
     }

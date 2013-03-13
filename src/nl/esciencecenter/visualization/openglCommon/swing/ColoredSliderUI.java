@@ -8,13 +8,27 @@ import javax.swing.JComponent;
 import javax.swing.JSlider;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-public class ColoredCustomJSlider extends BasicSliderUI {
+/**
+ * Extension of the basic slider UI to allow for colored thumbs.
+ * 
+ * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
+ * 
+ */
+public class ColoredSliderUI extends BasicSliderUI {
     Color thumbColor;
 
-    public ColoredCustomJSlider(final JSlider s) {
+    /**
+     * Default {@link JSlider} constructor with added color value.
+     * 
+     * @param s
+     *            the JSlider to use this UI on.
+     * @param c
+     *            the color to use fro the thumbs.
+     */
+    public ColoredSliderUI(final JSlider s, final Color c) {
         super(s);
 
-        thumbColor = new Color(255, 0, 0);
+        thumbColor = c;
 
     }
 
