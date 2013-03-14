@@ -6,8 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 /**
- * @author maarten
- *         Common (extendible) class for a separate Interface Panel.
+ * @author maarten Common (extendible) class for a separate Interface Panel.
  * 
  */
 public abstract class CommonInterfacePanel extends JPanel {
@@ -18,6 +17,7 @@ public abstract class CommonInterfacePanel extends JPanel {
      */
     public CommonInterfacePanel() {
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+
         setLayout(new BorderLayout(0, 0));
 
         setVisible(true);

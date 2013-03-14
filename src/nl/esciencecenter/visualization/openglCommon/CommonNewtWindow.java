@@ -74,6 +74,7 @@ public class CommonNewtWindow {
         // Add listeners
         glWindow.addMouseListener(inputHandler);
         glWindow.addKeyListener(inputHandler);
+        // glWindow.setFullscreen(true);
 
         WindowListener[] listeners = glWindow.getWindowListeners();
         for (WindowListener l : listeners) {
@@ -83,11 +84,13 @@ public class CommonNewtWindow {
         glWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowDestroyNotify(WindowEvent arg0) {
+                glWindow.getAnimator().stop();
                 System.exit(0);
             }
 
             @Override
             public void windowDestroyed(WindowEvent arg0) {
+                glWindow.getAnimator().stop();
                 System.exit(0);
             }
         });
