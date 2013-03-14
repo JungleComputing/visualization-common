@@ -11,12 +11,12 @@ import com.jogamp.newt.NewtFactory;
 import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.event.WindowListener;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.Animator;
 
 /**
- * Common (extendible) class for a stand alone native supported OpenGL
- * window.
+ * Common (extendible) class for a stand alone native supported OpenGL window.
  * 
  * @author Maarten van Meersbergen <m.van.meersbergen@esciencecenter.nl>
  * 
@@ -36,8 +36,7 @@ public class CommonNewtWindow {
      *            input events.
      * @param glEventListener
      *            A predefined GLEventListener that is added as event handler
-     *            for
-     *            openGL events.
+     *            for openGL events.
      * @param width
      *            The initial window width.
      * @param height
@@ -45,9 +44,8 @@ public class CommonNewtWindow {
      * @param windowTitle
      *            The window title.
      */
-    public CommonNewtWindow(boolean forceGL2ES2, InputHandler inputHandler,
-            GLEventListener glEventListener, int width, int height,
-            String windowTitle) {
+    public CommonNewtWindow(boolean forceGL2ES2, InputHandler inputHandler, GLEventListener glEventListener, int width,
+            int height, String windowTitle) {
         final GLProfile glp;
         // if (forceGL2ES2) {
         // glp = GLProfile.get(GLProfile.GL2ES2);
@@ -76,6 +74,12 @@ public class CommonNewtWindow {
         // Add listeners
         glWindow.addMouseListener(inputHandler);
         glWindow.addKeyListener(inputHandler);
+
+        WindowListener[] listeners = glWindow.getWindowListeners();
+        for (WindowListener l : listeners) {
+            glWindow.removeWindowListener(l);
+        }
+
         glWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowDestroyNotify(WindowEvent arg0) {
