@@ -1,8 +1,7 @@
-package nl.esciencecenter.visualization.openglCommon.textures;
+package nl.esciencecenter.visualization.openglCommon.noise;
 
 import java.nio.ByteBuffer;
 
-import nl.esciencecenter.visualization.openglCommon.noise.ImprovedPerlinNoise;
 
 import com.jogamp.common.nio.Buffers;
 

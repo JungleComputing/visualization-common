@@ -4,8 +4,37 @@ import nl.esciencecenter.visualization.openglCommon.math.Point4;
 import nl.esciencecenter.visualization.openglCommon.math.VecF3;
 import nl.esciencecenter.visualization.openglCommon.math.VectorFMath;
 
-public class Rectangle extends Model {
-    public Rectangle(float height, float width, float depth, VecF3 center, boolean bottom) {
+/* Copyright [2013] [Netherlands eScience Center]
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Box implementation of the Model class.
+ * 
+ * @author Maarten van Meersbergen <m.vanmeersbergen@esciencecenter.nl>
+ */
+public class Box extends Model {
+    /**
+     * Basic constructor for Box. Allows for an optional bottom side.
+     * 
+     * @param height
+     * @param width
+     * @param depth
+     * @param center
+     * @param bottom
+     */
+    public Box(float height, float width, float depth, VecF3 center, boolean bottom) {
         super(vertex_format.TRIANGLES);
         Point4[] vertices = makeVertices(height, width, depth, center);
 

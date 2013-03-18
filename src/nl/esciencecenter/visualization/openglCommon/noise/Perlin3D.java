@@ -1,4 +1,6 @@
-package nl.esciencecenter.visualization.openglCommon.textures;
+package nl.esciencecenter.visualization.openglCommon.noise;
+
+import nl.esciencecenter.visualization.openglCommon.textures.Texture3D;
 
 /**
  * 3-Dimensional Perlin Noise Texture.

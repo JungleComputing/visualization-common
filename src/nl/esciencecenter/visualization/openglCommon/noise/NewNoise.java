@@ -1,4 +1,4 @@
-package nl.esciencecenter.visualization.openglCommon.textures;
+package nl.esciencecenter.visualization.openglCommon.noise;
 
 /**
  * Currently unused class, stored for reference.
