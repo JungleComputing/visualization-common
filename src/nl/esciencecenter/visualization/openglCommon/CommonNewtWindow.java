@@ -12,6 +12,7 @@ import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
+import com.jogamp.newt.event.WindowUpdateEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.Animator;
 
@@ -44,7 +45,7 @@ public class CommonNewtWindow {
      * @param windowTitle
      *            The window title.
      */
-    public CommonNewtWindow(boolean forceGL2ES2, InputHandler inputHandler, GLEventListener glEventListener, int width,
+    public CommonNewtWindow(boolean forceGL2ES2, InputHandler inputHandler, final GLEventListener glEventListener, int width,
             int height, String windowTitle) {
         final GLProfile glp;
         // if (forceGL2ES2) {
@@ -77,11 +78,8 @@ public class CommonNewtWindow {
         // glWindow.setFullscreen(true);
 
         WindowListener[] listeners = glWindow.getWindowListeners();
-        for (WindowListener l : listeners) {
-            glWindow.removeWindowListener(l);
-        }
-
-        glWindow.addWindowListener(new WindowAdapter() {
+        final WindowListener original = listeners[0];
+        glWindow.addWindowListener(0, new WindowAdapter() {
             @Override
             public void windowDestroyNotify(WindowEvent arg0) {
                 glWindow.getAnimator().stop();
@@ -93,7 +91,33 @@ public class CommonNewtWindow {
                 glWindow.getAnimator().stop();
                 System.exit(0);
             }
+
+            @Override
+            public void windowGainedFocus(WindowEvent arg0) {
+                original.windowGainedFocus(arg0);
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent arg0) {
+                original.windowLostFocus(arg0);
+            }
+
+            @Override
+            public void windowMoved(WindowEvent arg0) {
+                original.windowMoved(arg0);
+            }
+
+            @Override
+            public void windowRepaint(WindowUpdateEvent arg0) {
+                original.windowRepaint(arg0);
+            }
+
+            @Override
+            public void windowResized(WindowEvent arg0) {
+                original.windowResized(arg0);
+            }
         });
+
         glWindow.addGLEventListener(glEventListener);
 
         // Create the Animator

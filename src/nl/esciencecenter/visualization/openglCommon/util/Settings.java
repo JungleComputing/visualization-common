@@ -51,8 +51,8 @@ public class Settings {
     private final String         CURRENT_NETCDF_EXTENSTION     = "nc";
 
     private static final boolean TOUCH_CONNECTION_ENABLED      = false;
-    private static final int     INTERFACE_WIDTH               = 240;
-    private static final int     INTERFACE_HEIGHT              = 1080;
+    private static int           INTERFACE_WIDTH               = 240;
+    private static int           INTERFACE_HEIGHT              = 1080;
 
     private static class SingletonHolder {
         public final static Settings instance = new Settings();
@@ -81,6 +81,10 @@ public class Settings {
             DEFAULT_SCREEN_WIDTH = props.getIntProperty("DEFAULT_SCREEN_WIDTH");
             DEFAULT_SCREEN_HEIGHT = props
                     .getIntProperty("DEFAULT_SCREEN_HEIGHT");
+
+            INTERFACE_WIDTH = props.getIntProperty("INTERFACE_WIDTH");
+            INTERFACE_HEIGHT = props
+                    .getIntProperty("INTERFACE_HEIGHT");
 
             SCREENSHOT_SCREEN_WIDTH = props
                     .getIntProperty("SCREENSHOT_SCREEN_WIDTH");

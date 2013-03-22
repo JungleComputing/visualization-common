@@ -572,7 +572,7 @@ public class GoggleSwing {
             vrtBox.setBorder(new BevelBorder(BevelBorder.RAISED));
         }
 
-        vrtBox.add(GoggleSwing.verticalStrut(5));
+        vrtBox.add(GoggleSwing.verticalStrut(1));
 
         for (Component current : components) {
             vrtBox.add(current);
